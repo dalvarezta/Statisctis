@@ -2365,10 +2365,249 @@
 
         <!-- Section 11: Regression & Correlation -->
         <section class="content-section" id="section-regression" data-title="Regression & Correlation">
-            <div class="section-placeholder">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 11 · Theory & Simulation</span>
                 <h2>Regression & Correlation</h2>
-                <p class="placeholder-text">Content will include: Pearson correlation, Spearman rank correlation, simple linear regression, least squares method, R², and interpretation.</p>
-                <div class="placeholder-visual">[ Scatter plot with regression line placeholder ]</div>
+                <p class="section-subtitle">Understanding relationships between variables</p>
+            </header>
+        
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>Pearson Correlation Coefficient</h3>
+                        <p>The <strong>Pearson correlation coefficient</strong> (denoted as $r$) measures the strength and direction of a <em>linear</em> relationship between two quantitative variables.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Pearson Correlation Formula</h4>
+                            <div class="katex-block">$$r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2}\sqrt{\sum_{i=1}^{n}(y_i - \bar{y})^2}}$$</div>
+                            <p class="formula-explain">Where $\bar{x}$ and $\bar{y}$ are the sample means, and $n$ is the number of observations.</p>
+                        </div>
+
+                        <h4>Interpretation of $r$</h4>
+                        <p>The Pearson correlation ranges from $-1$ to $+1$:</p>
+                        <ul>
+                            <li><strong>$r = +1$:</strong> Perfect positive linear relationship (as $x$ increases, $y$ increases proportionally)</li>
+                            <li><strong>$r = -1$:</strong> Perfect negative linear relationship (as $x$ increases, $y$ decreases proportionally)</li>
+                            <li><strong>$r = 0$:</strong> No linear relationship</li>
+                        </ul>
+
+                        <div class="formula-card">
+                            <h4>Strength Guidelines</h4>
+                            <table class="z-table">
+                                <thead>
+                                    <tr><th>|r| Value</th><th>Strength</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>0.00 – 0.19</td><td>Very weak / None</td></tr>
+                                    <tr><td>0.20 – 0.39</td><td>Weak</td></tr>
+                                    <tr><td>0.40 – 0.59</td><td>Moderate</td></tr>
+                                    <tr><td>0.60 – 0.79</td><td>Strong</td></tr>
+                                    <tr><td>0.80 – 1.00</td><td>Very strong</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Spearman Rank Correlation</h3>
+                        <p>The <strong>Spearman rank correlation</strong> (denoted as $\rho$ or $r_s$) is a non-parametric measure that assesses how well the relationship between two variables can be described using a <em>monotonic</em> function (consistently increasing or decreasing, but not necessarily linear).</p>
+
+                        <div class="definition-card bg-green border-green">
+                            <div class="definition-icon">📊</div>
+                            <div class="definition-content">
+                                <h4>When to Use Spearman Instead of Pearson</h4>
+                                <ul>
+                                    <li><strong>Ordinal data:</strong> When variables are ranked rather than measured on an interval/ratio scale</li>
+                                    <li><strong>Non-linear monotonic relationships:</strong> When the relationship is consistently increasing/decreasing but curved</li>
+                                    <li><strong>Outliers present:</strong> Spearman uses ranks, making it robust to extreme values</li>
+                                    <li><strong>Non-normal distributions:</strong> When the assumption of normality is violated</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Spearman Correlation Formula</h4>
+                            <div class="katex-block">$$\rho = 1 - \frac{6\sum d_i^2}{n(n^2 - 1)}$$</div>
+                            <p class="formula-explain">Where $d_i$ is the difference between the ranks of corresponding $x_i$ and $y_i$ values, and $n$ is the number of observations.</p>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Simple Linear Regression</h3>
+                        <p><strong>Simple linear regression</strong> models the relationship between a predictor variable $x$ and a response variable $y$ using a straight line.</p>
+
+                        <div class="formula-card">
+                            <h4>Regression Model</h4>
+                            <div class="katex-block">$$y = \beta_0 + \beta_1 x + \epsilon$$</div>
+                            <p class="formula-explain">Where $\beta_0$ is the y-intercept, $\beta_1$ is the slope (change in $y$ per unit change in $x$), and $\epsilon$ is the random error term.</p>
+                        </div>
+
+                        <h4>Least Squares Method</h4>
+                        <p>The least squares method finds the line that minimizes the sum of squared residuals (vertical distances between observed points and the fitted line).</p>
+
+                        <div class="formula-card">
+                            <h4>Least Squares Estimators</h4>
+                            <div class="katex-block">$$\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i - \bar{x})^2} = r \cdot \frac{s_y}{s_x}$$</div>
+                            <div class="katex-block">$$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}$$</div>
+                            <p class="formula-explain">Where $s_x$ and $s_y$ are the sample standard deviations, and $r$ is the Pearson correlation.</p>
+                        </div>
+
+                        <p>The fitted regression equation is written as:</p>
+                        <div class="formula-card">
+                            <div class="katex-block">$$\hat{y} = b_0 + b_1 x$$</div>
+                            <p class="formula-explain">Where $\hat{y}$ is the predicted value, $b_0$ is the estimated intercept, and $b_1$ is the estimated slope.</p>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Coefficient of Determination ($R^2$)</h3>
+                        <p>The <strong>coefficient of determination</strong>, denoted $R^2$, measures the proportion of variance in the dependent variable that is explained by the independent variable(s) in the regression model.</p>
+
+                        <div class="formula-card">
+                            <h4>$R^2$ Formula</h4>
+                            <div class="katex-block">$$R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST} = r^2$$</div>
+                            <p class="formula-explain">Where $SSR$ is the regression sum of squares (explained variation), $SSE$ is the error sum of squares (unexplained variation), and $SST$ is the total sum of squares. For simple linear regression, $R^2$ equals the square of the Pearson correlation.</p>
+                        </div>
+
+                        <h4>Interpretation</h4>
+                        <ul>
+                            <li><strong>$R^2 = 0$:</strong> The model explains none of the variability in $y$</li>
+                            <li><strong>$R^2 = 1$:</strong> The model explains all of the variability in $y$ (perfect fit)</li>
+                            <li><strong>Example:</strong> If $R^2 = 0.64$, then 64% of the variation in $y$ is explained by the linear relationship with $x$; the remaining 36% is due to other factors or random variation.</li>
+                        </ul>
+                    </article>
+                </div>
+            
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="misconception-warning">
+                        <div class="warning-header">
+                            <span class="warning-icon">⚠️</span>
+                            <h3>Misconception Warning</h3>
+                        </div>
+                        <div class="warning-content">
+                            <h4 class="wrong-title">❌ "Correlation Implies Causation"</h4>
+                            <p class="wrong-text">"Ice cream sales and drowning deaths are strongly correlated, so eating ice cream causes drowning."</p>
+                        
+                            <h4 class="right-title">✅ Correct Understanding</h4>
+                            <p class="right-text">"Both ice cream sales and drowning deaths increase in summer due to a <strong>confounding variable</strong>: hot weather. More people swim (increasing drowning risk) and buy ice cream when it's hot."</p>
+                        
+                            <div class="warning-explanation">
+                                <p>A strong correlation between two variables does <strong>not</strong> prove that one causes the other. Possible explanations include:</p>
+                                <ul>
+                                    <li><strong>Confounding:</strong> A third variable affects both</li>
+                                    <li><strong>Reverse causation:</strong> $Y$ might cause $X$, not vice versa</li>
+                                    <li><strong>Coincidence:</strong> Especially with small samples or multiple comparisons</li>
+                                </ul>
+                                <p><strong>Establishing causation</strong> requires controlled experiments, longitudinal studies, or advanced causal inference methods—not just observational correlation.</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="info-card">
+                        <h4>🔑 Key Properties of $r$</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-blue">○</span> Unitless (independent of measurement units)</li>
+                            <li><span class="factor-symbol text-blue">○</span> Symmetric: $r_{xy} = r_{yx}$</li>
+                            <li><span class="factor-symbol text-red">✗</span> Only measures <strong>linear</strong> relationships</li>
+                            <li><span class="factor-symbol text-red">✗</span> Sensitive to outliers</li>
+                        </ul>
+                    </div>
+                
+                    <div class="info-card">
+                        <h4>📝 Assumptions for Linear Regression</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-green">✓</span> Linearity: Relationship is linear</li>
+                            <li><span class="factor-symbol text-green">✓</span> Independence: Observations are independent</li>
+                            <li><span class="factor-symbol text-green">✓</span> Homoscedasticity: Constant variance of residuals</li>
+                            <li><span class="factor-symbol text-green">✓</span> Normality: Residuals are normally distributed</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        
+            <!-- Interactive Simulator -->
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Data Controls</h3>
+                    
+                        <div class="slider-control">
+                            <label for="correlationStrength">
+                                Target Correlation
+                                <output class="slider-value" id="correlationValue" for="correlationStrength">0.7</output>
+                            </label>
+                            <input type="range" id="correlationStrength" min="-1" max="1" value="0.7" step="0.05"
+                                   aria-describedby="correlationDesc">
+                            <div class="slider-ticks" id="correlationDesc">
+                                <span>-1</span><span>0</span><span>+1</span>
+                            </div>
+                            <p class="control-note">Controls noise level for random data generation</p>
+                        </div>
+                    
+                        <div class="button-group">
+                            <button id="generateDataBtn" class="btn btn-primary sim-btn" aria-label="Generate random data">
+                                <span class="btn-icon">🎲</span><span class="btn-label">Generate Random Data</span>
+                            </button>
+                            <button id="clearDataBtn" class="btn btn-outline sim-btn" aria-label="Clear all data points">
+                                <span class="btn-icon">🗑️</span><span class="btn-label">Clear</span>
+                            </button>
+                        </div>
+                        <p class="control-note">Click on the chart to add points. Click near an existing point to remove it.</p>
+                    </div>
+                
+                    <div class="stats-panel">
+                        <h3>📊 Live Statistics</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Pearson $r$</div>
+                                <div class="stat-value" id="pearsonR">—</div>
+                                <div class="stat-subtitle">linear correlation</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Spearman $\rho$</div>
+                                <div class="stat-value" id="spearmanRho">—</div>
+                                <div class="stat-subtitle">rank correlation</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">$R^2$</div>
+                                <div class="stat-value" id="rSquared">—</div>
+                                <div class="stat-subtitle">variance explained</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Points</div>
+                                <div class="stat-value" id="pointCount">0</div>
+                                <div class="stat-subtitle">in dataset</div>
+                            </div>
+                        </div>
+                        <div class="stat-highlight">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-highlight-content">
+                                <div class="stat-big-number" id="regressionEq">—</div>
+                                <div class="stat-label">Regression Equation</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3>Scatter Plot with Regression Line</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-dot legend-dot-blue"></span>Data Points</span>
+                            <span class="legend-item"><span class="legend-line legend-line-red"></span>Regression Line</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="regressionChart" aria-label="Scatter plot with regression line" role="img"></canvas>
+                    </div>
+                    <div class="viz-footer">
+                        <p>Add at least 2 points to see the regression line and statistics. Click on the canvas to add/remove points.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
