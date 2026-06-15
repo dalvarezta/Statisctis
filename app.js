@@ -139,8 +139,9 @@ const Router = {
             });
         }
 
-        // NUEVO: Renderizar fórmulas matemáticas con KaTeX
-        if (sectionId === 'ci-theory' || sectionId === 'ci-simulator') {
+        // Render KaTeX math formulas for ANY section being navigated to
+        // This runs automatically for all sections with LaTeX content
+        requestAnimationFrame(() => {
             const sectionEl = document.getElementById(`section-${sectionId}`);
             if (typeof window.renderMathInElement === 'function' && sectionEl) {
                 window.renderMathInElement(sectionEl, {
@@ -153,7 +154,7 @@ const Router = {
                     throwOnError: false
                 });
             }
-        }
+        });
 
         // Guardamos la última sección visitada
         this._lastSection = sectionId;
