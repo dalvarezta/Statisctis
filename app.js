@@ -115,6 +115,11 @@ const Router = {
                 HypothesisTestSimulator.destroy();
             }
         }
+        if (sectionId !== 'descriptive' && this._lastSection === 'descriptive') {
+            if (typeof DescriptiveStatsExplorer !== 'undefined' && DescriptiveStatsExplorer.chart) {
+                DescriptiveStatsExplorer.destroy();
+            }
+        }
 
         this.showSection(sectionId);
         this.updateActiveNav(sectionId);
@@ -140,6 +145,13 @@ const Router = {
                 if (typeof CaseStudyViz !== 'undefined' && !CaseStudyViz.clinicalChart) {
                     CaseStudyViz.init();
                     setupCaseStudyTabs();
+                }
+            });
+        }
+        if (sectionId === 'descriptive') {
+            requestAnimationFrame(() => {
+                if (typeof DescriptiveStatsExplorer !== 'undefined' && !DescriptiveStatsExplorer.chart) {
+                    DescriptiveStatsExplorer.init();
                 }
             });
         }
@@ -861,6 +873,422 @@ if (document.readyState === 'loading') {
 }
 
 // ============================================
+// DESCRIPTIVE STATISTICS EXPLORER MODULE
+// Interactive histogram with live statistics
+// ============================================
+const DescriptiveStatsExplorer = {
+    // Chart.js instance
+    chart: null,
+
+    // State
+    currentData: [],
+    currentShape: 'normal',
+    sampleSize: 100,
+
+    // DOM references
+    elements: {},
+
+    /**
+     * Initialize the descriptive statistics explorer
+     */
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.generateSample();
+    },
+
+    /**
+     * Cache DOM references for performance
+     */
+    cacheElements() {
+        this.elements = {
+            distributionShape: document.getElementById('distributionShape'),
+            sampleSizeSlider: document.getElementById('sampleSizeDescStats'),
+            sampleSizeValue: document.getElementById('sampleSizeValueDesc'),
+            generateBtn: document.getElementById('generateBtn'),
+            vizSampleSize: document.getElementById('vizSampleSizeDesc'),
+            statMean: document.getElementById('statMean'),
+            statMedian: document.getElementById('statMedian'),
+            statMode: document.getElementById('statMode'),
+            statRange: document.getElementById('statRange'),
+            statVariance: document.getElementById('statVariance'),
+            statStdDev: document.getElementById('statStdDev'),
+            statSkewness: document.getElementById('statSkewness'),
+            skewInterpretation: document.getElementById('skewInterpretation'),
+            canvas: document.getElementById('descriptiveChart')
+        };
+    },
+
+    /**
+     * Bind event listeners to controls
+     */
+    bindEvents() {
+        if (!this.elements.generateBtn) return;
+
+        this.elements.generateBtn.addEventListener('click', () => this.generateSample());
+        
+        this.elements.sampleSizeSlider.addEventListener('input', (e) => {
+            this.sampleSize = parseInt(e.target.value, 10);
+            this.elements.sampleSizeValue.textContent = this.sampleSize;
+        });
+
+        this.elements.distributionShape.addEventListener('change', (e) => {
+            this.currentShape = e.target.value;
+            this.generateSample();
+        });
+    },
+
+    /**
+     * Generate a new random sample based on selected distribution
+     */
+    generateSample() {
+        const n = this.sampleSize;
+        this.currentData = [];
+
+        switch (this.currentShape) {
+            case 'normal':
+                this.currentData = this.generateNormal(n, 50, 15);
+                break;
+            case 'right-skewed':
+                this.currentData = this.generateRightSkewed(n, 50, 0.5);
+                break;
+            case 'left-skewed':
+                this.currentData = this.generateLeftSkewed(n, 50, 0.5);
+                break;
+            case 'bimodal':
+                this.currentData = this.generateBimodal(n);
+                break;
+            case 'uniform':
+                this.currentData = this.generateUniform(n, 20, 80);
+                break;
+        }
+
+        this.updateStats();
+        this.renderHistogram();
+        this.elements.vizSampleSize.textContent = n;
+    },
+
+    /**
+     * Generate normally distributed data using Box-Muller transform
+     */
+    generateNormal(n, mean, sd) {
+        const data = [];
+        for (let i = 0; i < n; i++) {
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+            data.push(mean + z * sd);
+        }
+        return data;
+    },
+
+    /**
+     * Generate right-skewed data using exponential transformation
+     */
+    generateRightSkewed(n, base, rate) {
+        const data = [];
+        for (let i = 0; i < n; i++) {
+            const expVal = -Math.log(1 - Math.random()) / rate;
+            data.push(base + expVal * 10);
+        }
+        return data;
+    },
+
+    /**
+     * Generate left-skewed data by reflecting right-skewed
+     */
+    generateLeftSkewed(n, base, rate) {
+        const rightSkewed = this.generateRightSkewed(n, 0, rate);
+        const maxVal = Math.max(...rightSkewed);
+        return rightSkewed.map(v => base + (maxVal - v) * 5);
+    },
+
+    /**
+     * Generate bimodal data from two normal distributions
+     */
+    generateBimodal(n) {
+        const data = [];
+        const halfN = Math.floor(n / 2);
+        for (let i = 0; i < halfN; i++) {
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+            data.push(35 + z * 8);
+        }
+        for (let i = 0; i < n - halfN; i++) {
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+            data.push(65 + z * 8);
+        }
+        return data;
+    },
+
+    /**
+     * Generate uniformly distributed data
+     */
+    generateUniform(n, min, max) {
+        const data = [];
+        for (let i = 0; i < n; i++) {
+            data.push(min + Math.random() * (max - min));
+        }
+        return data;
+    },
+
+    /**
+     * Calculate and display all descriptive statistics
+     */
+    updateStats() {
+        const data = this.currentData;
+        const n = data.length;
+
+        // Mean
+        const mean = data.reduce((a, b) => a + b, 0) / n;
+
+        // Median
+        const sorted = [...data].sort((a, b) => a - b);
+        const mid = Math.floor(n / 2);
+        const median = n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+        // Mode (for continuous data, use binning approach)
+        const mode = this.calculateMode(data);
+
+        // Range
+        const range = Math.max(...data) - Math.min(...data);
+
+        // Variance (sample, with n-1)
+        const variance = data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / (n - 1);
+
+        // Standard Deviation
+        const stdDev = Math.sqrt(variance);
+
+        // Skewness (sample)
+        const skewness = this.calculateSkewness(data, mean, stdDev, n);
+
+        // Update DOM
+        this.elements.statMean.textContent = mean.toFixed(2);
+        this.elements.statMedian.textContent = median.toFixed(2);
+        this.elements.statMode.textContent = mode;
+        this.elements.statRange.textContent = range.toFixed(2);
+        this.elements.statVariance.textContent = variance.toFixed(2);
+        this.elements.statStdDev.textContent = stdDev.toFixed(2);
+        this.elements.statSkewness.textContent = skewness.toFixed(3);
+
+        // Generate interpretation
+        this.updateInterpretation(mean, median, skewness);
+    },
+
+    /**
+     * Calculate mode using histogram binning
+     */
+    calculateMode(data) {
+        const n = data.length;
+        const numBins = Math.round(Math.sqrt(n));
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const binWidth = (max - min) / numBins;
+
+        const bins = new Array(numBins).fill(0);
+        data.forEach(x => {
+            const binIndex = Math.min(Math.floor((x - min) / binWidth), numBins - 1);
+            bins[binIndex]++;
+        });
+
+        const maxCount = Math.max(...bins);
+        const modeBinIndex = bins.indexOf(maxCount);
+
+        // Check if there's a clear mode
+        const secondMax = [...bins].sort((a, b) => b - a)[1];
+        if (maxCount < n * 0.1 || maxCount - secondMax < 2) {
+            return 'no clear mode';
+        }
+
+        const modeValue = min + (modeBinIndex + 0.5) * binWidth;
+        return modeValue.toFixed(1);
+    },
+
+    /**
+     * Calculate sample skewness coefficient
+     */
+    calculateSkewness(data, mean, stdDev, n) {
+        if (n < 3 || stdDev === 0) return 0;
+        const sumCubed = data.reduce((sum, x) => sum + Math.pow((x - mean) / stdDev, 3), 0);
+        return (n / ((n - 1) * (n - 2))) * sumCubed;
+    },
+
+    /**
+     * Generate interpretation text based on mean/median relationship
+     */
+    updateInterpretation(mean, median, skewness) {
+        let text = '';
+        const diff = mean - median;
+
+        if (Math.abs(diff) < 0.5) {
+            text = `Mean ≈ Median → approximately symmetric distribution`;
+        } else if (diff > 0) {
+            text = `Mean > Median (${diff.toFixed(2)}) → right-skewed distribution`;
+        } else {
+            text = `Mean < Median (${diff.toFixed(2)}) → left-skewed distribution`;
+        }
+
+        // Add skewness coefficient interpretation
+        if (Math.abs(skewness) < 0.5) {
+            text += ` (g₁ = ${skewness.toFixed(2)}: roughly symmetric)`;
+        } else if (skewness > 0) {
+            text += ` (g₁ = ${skewness.toFixed(2)}: positive skew)`;
+        } else {
+            text += ` (g₁ = ${skewness.toFixed(2)}: negative skew)`;
+        }
+
+        this.elements.skewInterpretation.textContent = text;
+    },
+
+    /**
+     * Render histogram with mean and median reference lines
+     */
+    renderHistogram() {
+        const ctx = this.elements.canvas.getContext('2d');
+        const data = this.currentData;
+
+        // Create histogram bins
+        const numBins = Math.round(Math.sqrt(data.length));
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const binWidth = (max - min) / numBins;
+
+        const bins = new Array(numBins).fill(0);
+        const binLabels = [];
+        data.forEach(x => {
+            const binIndex = Math.min(Math.floor((x - min) / binWidth), numBins - 1);
+            bins[binIndex]++;
+        });
+
+        for (let i = 0; i < numBins; i++) {
+            binLabels.push((min + i * binWidth).toFixed(1));
+        }
+
+        // Calculate mean and median for reference lines
+        const mean = data.reduce((a, b) => a + b, 0) / data.length;
+        const sorted = [...data].sort((a, b) => a - b);
+        const mid = Math.floor(data.length / 2);
+        const median = data.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+        // Destroy existing chart
+        if (this.chart) {
+            this.chart.destroy();
+        }
+
+        // Create new chart
+        this.chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: binLabels,
+                datasets: [{
+                    label: 'Frequency',
+                    data: bins,
+                    backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => `Bin: ${items[0].label} - ${(parseFloat(items[0].label) + binWidth).toFixed(1)}`,
+                            label: (ctx) => `Frequency: ${ctx.raw}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        },
+                        ticks: {
+                            maxTicksLimit: 10
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 300
+                }
+            }
+        });
+
+        // Add reference lines after chart renders
+        setTimeout(() => {
+            this.addReferenceLines(mean, median, min, max);
+        }, 100);
+    },
+
+    /**
+     * Add vertical reference lines for mean and median
+     */
+    addReferenceLines(mean, median, dataMin, dataMax) {
+        if (!this.chart || !this.chart.ctx) return;
+
+        const ctx = this.chart.ctx;
+        const chartArea = this.chart.chartArea;
+        const xAxis = this.chart.scales.x;
+
+        // Scale function for x-position
+        const xScale = (value) => {
+            const range = dataMax - dataMin;
+            const normalized = (value - dataMin) / range;
+            return chartArea.left + normalized * (chartArea.right - chartArea.left);
+        };
+
+        ctx.save();
+
+        // Mean line (red)
+        const meanX = xScale(mean);
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(meanX, chartArea.top);
+        ctx.lineTo(meanX, chartArea.bottom);
+        ctx.stroke();
+
+        // Median line (green)
+        const medianX = xScale(median);
+        ctx.strokeStyle = '#16a34a';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(medianX, chartArea.top);
+        ctx.lineTo(medianX, chartArea.bottom);
+        ctx.stroke();
+
+        ctx.restore();
+    },
+
+    /**
+     * Destroy chart and clean up
+     */
+    destroy() {
+        if (this.chart) {
+            this.chart.destroy();
+            this.chart = null;
+        }
+    }
+};
+
+// ============================================
 // EXPORTS (for module systems / testing)
 // ============================================
 if (typeof module !== 'undefined' && module.exports) {
@@ -869,7 +1297,8 @@ if (typeof module !== 'undefined' && module.exports) {
         Router,
         Sidebar,
         Theme,
-        Progress
+        Progress,
+        DescriptiveStatsExplorer
     };
 }
 // ============================================
