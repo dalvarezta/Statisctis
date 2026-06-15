@@ -130,10 +130,238 @@
 
         <!-- Section 1: Introduction -->
         <section class="content-section" id="section-introduction" data-title="Introduction to Statistics">
-            <div class="section-placeholder">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 1 · Theory</span>
                 <h2>Introduction to Statistics</h2>
-                <p class="placeholder-text">Content will include: What is statistics? Types of data, population vs sample, descriptive vs inferential statistics.</p>
-                <div class="placeholder-visual">[ Interactive diagram placeholder ]</div>
+                <p class="section-subtitle">The science of collecting, analyzing, and interpreting data</p>
+            </header>
+
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>What is Statistics?</h3>
+                        <p><strong>Statistics</strong> is the scientific discipline concerned with collecting, organizing, analyzing, interpreting, and presenting data. It provides the tools and methods necessary to make sense of uncertainty and variability in the world around us.</p>
+                        
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">📊</div>
+                            <div class="definition-content">
+                                <h4>Why Statistics Matters</h4>
+                                <p>In an era of big data, statistics empowers us to:</p>
+                                <ul>
+                                    <li>Make evidence-based decisions rather than relying on intuition</li>
+                                    <li>Distinguish meaningful patterns from random noise</li>
+                                    <li>Quantify uncertainty and assess risk</li>
+                                    <li>Draw reliable conclusions from limited observations</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Example:</strong> A pharmaceutical company testing a new vaccine doesn't give it to everyone immediately. Instead, they conduct a clinical trial with a sample of participants. Using statistical methods, they analyze whether the observed effectiveness in the sample provides sufficient evidence that the vaccine works for the entire population — while accounting for natural variation and potential side effects.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Types of Data</h3>
+                        <p>Data can be classified based on its nature and the level of measurement. Understanding these distinctions is crucial because different types of data require different statistical techniques.</p>
+
+                        <h4>Qualitative (Categorical) Data</h4>
+                        <p>Describes qualities or characteristics; non-numerical in nature.</p>
+                        <ul>
+                            <li><strong>Nominal:</strong> Categories without inherent order (e.g., eye color: blue, brown, green; gender; country of birth)</li>
+                            <li><strong>Ordinal:</strong> Categories with a meaningful order but unknown intervals between them (e.g., Likert scale: strongly disagree → strongly agree; education level: high school &lt; bachelor's &lt; master's &lt; PhD)</li>
+                        </ul>
+
+                        <h4>Quantitative (Numerical) Data</h4>
+                        <p>Represents measurable quantities; arithmetic operations are meaningful.</p>
+                        <ul>
+                            <li><strong>Discrete:</strong> Countable values, often integers (e.g., number of children in a family, defects per batch, goals scored in a match)</li>
+                            <li><strong>Continuous:</strong> Can take any value within a range (e.g., height, weight, temperature, time to complete a task)</li>
+                        </ul>
+
+                        <div class="formula-card">
+                            <h4>Levels of Measurement</h4>
+                            <table class="z-table">
+                                <thead>
+                                    <tr><th>Level</th><th>Order?</th><th>Equal Intervals?</th><th>True Zero?</th><th>Example</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Nominal</td><td>❌</td><td>❌</td><td>❌</td><td>Blood type (A, B, AB, O)</td></tr>
+                                    <tr><td>Ordinal</td><td>✅</td><td>❌</td><td>❌</td><td>Movie rating (1–5 stars)</td></tr>
+                                    <tr><td>Interval</td><td>✅</td><td>✅</td><td>❌</td><td>Temperature in °C or °F</td></tr>
+                                    <tr><td>Ratio</td><td>✅</td><td>✅</td><td>✅</td><td>Height, weight, income</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Population vs Sample</h3>
+                        <p>A fundamental distinction in statistics is between the complete group we're interested in and the subset we actually observe.</p>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">🎯</div>
+                            <div class="definition-content">
+                                <h4>Key Definitions</h4>
+                                <p><strong>Population:</strong> The entire group of individuals or items about which we want to draw conclusions.</p>
+                                <p><strong>Sample:</strong> A subset of the population from which data is actually collected.</p>
+                                <p><strong>Parameter:</strong> A numerical characteristic of a population (e.g., population mean $μ$, population proportion $p$). Parameters are typically <em>unknown</em> and fixed.</p>
+                                <p><strong>Statistic:</strong> A numerical characteristic of a sample (e.g., sample mean $\bar{x}$, sample proportion $\hat{p}$). Statistics vary from sample to sample and are used to <em>estimate</em> parameters.</p>
+                            </div>
+                        </div>
+
+                        <p><strong>Why We Sample:</strong> Studying an entire population is often impractical, expensive, or impossible. A well-designed sample can provide accurate estimates of population parameters at a fraction of the cost and time.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>The Statistical Inference Pipeline</h3>
+                        <p>The diagram below illustrates how we move from a population to making inferences through sampling:</p>
+                        
+                        <svg class="pipeline-diagram" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Statistical inference pipeline diagram">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--text-primary)"/>
+                                </marker>
+                            </defs>
+                            
+                            <!-- Population -->
+                            <ellipse cx="80" cy="70" rx="65" ry="50" fill="var(--bg-secondary)" stroke="var(--accent-blue)" stroke-width="2"/>
+                            <text x="80" y="65" text-anchor="middle" font-size="12" fill="var(--text-primary)" font-weight="bold">Population</text>
+                            <text x="80" y="85" text-anchor="middle" font-size="11" fill="var(--text-muted)">N individuals</text>
+                            <circle cx="55" cy="60" r="3" fill="var(--accent-blue)"/>
+                            <circle cx="90" cy="50" r="3" fill="var(--accent-blue)"/>
+                            <circle cx="110" cy="75" r="3" fill="var(--accent-blue)"/>
+                            <circle cx="65" cy="90" r="3" fill="var(--accent-blue)"/>
+                            <circle cx="100" cy="95" r="3" fill="var(--accent-blue)"/>
+                            <circle cx="75" cy="70" r="3" fill="var(--accent-blue-opacity)"/>
+                            <circle cx="85" cy="80" r="3" fill="var(--accent-blue-opacity)"/>
+                            <circle cx="95" cy="65" r="3" fill="var(--accent-blue-opacity)"/>
+                            
+                            <!-- Arrow: Sampling -->
+                            <line x1="145" y1="70" x2="185" y2="70" stroke="var(--text-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <text x="165" y="60" text-anchor="middle" font-size="10" fill="var(--text-muted)">Sample</text>
+                            
+                            <!-- Sample -->
+                            <ellipse cx="240" cy="70" rx="50" ry="40" fill="var(--bg-secondary)" stroke="var(--accent-green)" stroke-width="2"/>
+                            <text x="240" y="65" text-anchor="middle" font-size="12" fill="var(--text-primary)" font-weight="bold">Sample</text>
+                            <text x="240" y="85" text-anchor="middle" font-size="11" fill="var(--text-muted)">n individuals</text>
+                            <circle cx="225" cy="60" r="4" fill="var(--accent-green)"/>
+                            <circle cx="250" cy="55" r="4" fill="var(--accent-green)"/>
+                            <circle cx="260" cy="75" r="4" fill="var(--accent-green)"/>
+                            <circle cx="230" cy="85" r="4" fill="var(--accent-green)"/>
+                            
+                            <!-- Arrow: Calculate -->
+                            <line x1="290" y1="70" x2="330" y2="70" stroke="var(--text-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <text x="310" y="60" text-anchor="middle" font-size="10" fill="var(--text-muted)">Compute</text>
+                            
+                            <!-- Statistic -->
+                            <rect x="340" y="45" width="90" height="50" rx="8" fill="var(--bg-secondary)" stroke="var(--accent-orange)" stroke-width="2"/>
+                            <text x="385" y="65" text-anchor="middle" font-size="11" fill="var(--text-primary)" font-weight="bold">Statistic</text>
+                            <text x="385" y="82" text-anchor="middle" font-size="13" fill="var(--accent-orange)" font-family="monospace">x̄, p̂</text>
+                            
+                            <!-- Arrow: Infer -->
+                            <path d="M 385 95 L 385 130 L 80 130 L 80 155" stroke="var(--text-primary)" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                            <text x="250" y="125" text-anchor="middle" font-size="10" fill="var(--text-muted)">Infer / Estimate</text>
+                            
+                            <!-- Parameter box at bottom -->
+                            <rect x="35" y="160" width="90" height="50" rx="8" fill="var(--bg-secondary)" stroke="var(--accent-purple)" stroke-width="2"/>
+                            <text x="80" y="180" text-anchor="middle" font-size="11" fill="var(--text-primary)" font-weight="bold">Parameter</text>
+                            <text x="80" y="197" text-anchor="middle" font-size="13" fill="var(--accent-purple)" font-family="monospace">μ, p</text>
+                            
+                            <!-- Legend -->
+                            <rect x="450" y="40" width="130" height="100" rx="6" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1"/>
+                            <text x="515" y="60" text-anchor="middle" font-size="11" fill="var(--text-primary)" font-weight="bold">Legend</text>
+                            <line x1="460" y1="75" x2="480" y2="75" stroke="var(--accent-blue)" stroke-width="2"/>
+                            <text x="490" y="79" font-size="9" fill="var(--text-muted)">Population</text>
+                            <line x1="460" y1="92" x2="480" y2="92" stroke="var(--accent-green)" stroke-width="2"/>
+                            <text x="490" y="96" font-size="9" fill="var(--text-muted)">Sample</text>
+                            <rect x="460" y="105" width="20" height="12" rx="2" fill="none" stroke="var(--accent-orange)" stroke-width="2"/>
+                            <text x="490" y="114" font-size="9" fill="var(--text-muted)">Statistic</text>
+                            <rect x="460" y="122" width="20" height="12" rx="2" fill="none" stroke="var(--accent-purple)" stroke-width="2"/>
+                            <text x="490" y="131" font-size="9" fill="var(--text-muted)">Parameter</text>
+                        </svg>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Descriptive vs Inferential Statistics</h3>
+                        <p>Statistics is broadly divided into two branches, each serving distinct purposes in data analysis.</p>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">📐</div>
+                            <div class="definition-content">
+                                <h4>Descriptive Statistics</h4>
+                                <p><strong>Goal:</strong> Summarize and describe the main features of a dataset.</p>
+                                <p><strong>Tools:</strong> Measures of central tendency (mean, median, mode), measures of spread (variance, standard deviation, range), and visual displays (histograms, box plots).</p>
+                                <p><strong>Scope:</strong> Only describes the data at hand — no generalization beyond the observed sample.</p>
+                                <p><em>Example:</em> "The average score of the 30 students in this class was 78.5, with a standard deviation of 12.3."</p>
+                            </div>
+                        </div>
+
+                        <div class="definition-card bg-green border-green">
+                            <div class="definition-icon">🔮</div>
+                            <div class="definition-content">
+                                <h4>Inferential Statistics</h4>
+                                <p><strong>Goal:</strong> Draw conclusions about a population based on sample data.</p>
+                                <p><strong>Tools:</strong> Confidence intervals, hypothesis tests, regression analysis, Bayesian inference.</p>
+                                <p><strong>Scope:</strong> Makes probabilistic statements about unobserved population parameters, accounting for sampling uncertainty.</p>
+                                <p><em>Example:</em> "We are 95% confident that the true average test score for all students in the district lies between 74.2 and 82.8."</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="info-card">
+                        <h4>🎲 Notation Guide</h4>
+                        <table class="z-table">
+                            <thead>
+                                <tr><th>Concept</th><th>Population</th><th>Sample</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Size</td><td>$N$</td><td>$n$</td></tr>
+                                <tr><td>Mean</td><td>$\mu$</td><td>$\bar{x}$</td></tr>
+                                <tr><td>Proportion</td><td>$p$</td><td>$\hat{p}$</td></tr>
+                                <tr><td>Std. Dev.</td><td>$\sigma$</td><td>$s$</td></tr>
+                                <tr><td>Variance</td><td>$\sigma^2$</td><td>$s^2$</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="misconception-warning">
+                        <div class="warning-header">
+                            <span class="warning-icon">⚠️</span>
+                            <h3>Common Pitfalls</h3>
+                        </div>
+                        <div class="warning-content">
+                            <h4 class="wrong-title">❌ Confusing Statistic and Parameter</h4>
+                            <p class="wrong-text">Treating $\bar{x}$ as if it equals $\mu$. Remember: $\bar{x}$ varies from sample to sample; $\mu$ is fixed but unknown.</p>
+
+                            <h4 class="right-title">✅ Correct Mindset</h4>
+                            <p class="right-text">Use $\bar{x}$ to <em>estimate</em> $\mu$, acknowledging the uncertainty via confidence intervals or hypothesis tests.</p>
+
+                            <div class="warning-explanation">
+                                <p>Also beware of <strong>biased sampling</strong>: a large but unrepresentative sample (e.g., voluntary online polls) can produce misleading statistics, regardless of sample size.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>💡 Quick Reference: Data Types</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-blue">●</span> <strong>Nominal:</strong> Names only</li>
+                            <li><span class="factor-symbol text-blue">▲</span> <strong>Ordinal:</strong> Ordered categories</li>
+                            <li><span class="factor-symbol text-green">◆</span> <strong>Discrete:</strong> Countable numbers</li>
+                            <li><span class="factor-symbol text-green">∞</span> <strong>Continuous:</strong> Measurable quantities</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="section-cta">
+                <p>Ready to explore how we summarize and visualize data?</p>
+                <button class="btn btn-primary cta-btn" data-navigate="descriptive">
+                    Continue to Descriptive Statistics 🚀
+                </button>
             </div>
         </section>
 
