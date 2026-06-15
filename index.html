@@ -910,10 +910,254 @@
 
         <!-- Section 4: Sampling & Estimation -->
         <section class="content-section" id="section-sampling" data-title="Sampling & Estimation">
-            <div class="section-placeholder">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 4 · Theory</span>
                 <h2>Sampling & Estimation</h2>
-                <p class="placeholder-text">Content will include: Simple random sampling, stratified sampling, Central Limit Theorem, point estimation, and properties of estimators.</p>
-                <div class="placeholder-visual">[ CLT simulation placeholder ]</div>
+                <p class="section-subtitle">From populations to sample statistics and the Central Limit Theorem</p>
+            </header>
+
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>Sampling Methods</h3>
+                        <p>The way we select a sample from a population profoundly affects the validity of our inferences. Two fundamental approaches are:</p>
+
+                        <h4>Simple Random Sampling (SRS)</h4>
+                        <p>In <strong>simple random sampling</strong>, every individual in the population has an equal probability of being selected, and every possible sample of size $n$ is equally likely. This method eliminates selection bias and forms the foundation for most statistical inference procedures.</p>
+                        <p><em>Example:</em> Drawing names from a hat, or using a random number generator to select student IDs from a university registry.</p>
+
+                        <h4>Stratified Sampling</h4>
+                        <p>In <strong>stratified sampling</strong>, the population is first divided into distinct subgroups (strata) based on a characteristic (e.g., age, gender, income level). Then, a simple random sample is drawn from <em>each</em> stratum. This ensures representation from all key subgroups.</p>
+                        <p><em>Example:</em> To survey voter preferences, you might stratify by political affiliation (Democrat, Republican, Independent) and sample proportionally from each group.</p>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">⚖️</div>
+                            <div class="definition-content">
+                                <h4>SRS vs Stratified: Key Differences</h4>
+                                <table class="z-table">
+                                    <thead>
+                                        <tr><th>Aspect</th><th>Simple Random Sampling</th><th>Stratified Sampling</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Selection</td><td>Purely random from entire population</td><td>Random within each stratum</td></tr>
+                                        <tr><td>Guarantees</td><td>No guarantee of subgroup representation</td><td>All strata represented</td></tr>
+                                        <tr><td>Precision</td><td>Good for homogeneous populations</td><td>Better for heterogeneous populations</td></tr>
+                                        <tr><td>Complexity</td><td>Simple to implement</td><td>Requires knowledge of strata</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>The Central Limit Theorem</h3>
+                        <p>The Central Limit Theorem (CLT) is arguably the most important result in statistics. It explains why the normal distribution appears so frequently in nature and justifies many inferential procedures.</p>
+
+                        <div class="formula-card">
+                            <h4>Statement of the CLT</h4>
+                            <div class="katex-block">$$\text{If } X_1, X_2, \dots, X_n \text{ are i.i.d. with mean } \mu \text{ and variance } \sigma^2, \text{ then:}$$</div>
+                            <div class="katex-block">$$\bar{X}_n = \frac{1}{n}\sum_{i=1}^{n} X_i \;\;\xrightarrow{d}\;\; \mathcal{N}\left(\mu,\; \frac{\sigma^2}{n}\right) \;\;\text{as } n \to \infty$$</div>
+                            <p class="formula-explain">Equivalently, the standardized sample mean converges to standard normal:</p>
+                            <div class="katex-block">$$Z_n = \frac{\bar{X}_n - \mu}{\sigma/\sqrt{n}} \;\;\xrightarrow{d}\;\; \mathcal{N}(0, 1)$$</div>
+                        </div>
+
+                        <h4>Intuition</h4>
+                        <p>The CLT tells us that when we average many independent random variables, the resulting distribution becomes approximately normal—<strong>regardless of the original population's shape</strong>. This happens because extreme values tend to cancel out when averaged, and the "middle" values accumulate.</p>
+
+                        <h4>Why It Matters</h4>
+                        <ul>
+                            <li><strong>Enables inference:</strong> We can construct confidence intervals and hypothesis tests for means even when the population isn't normal.</li>
+                            <li><strong>Justifies normal approximations:</strong> Many statistics (not just means) are sums or averages, so the CLT applies broadly.</li>
+                            <li><strong>Practical rule:</strong> For most distributions, $n \geq 30$ gives a good normal approximation. Highly skewed distributions may require larger samples.</li>
+                        </ul>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Point Estimation</h3>
+                        <p>A <strong>point estimator</strong> is a statistic (a function of sample data) used to estimate an unknown population parameter. The specific value computed from a given sample is called a <strong>point estimate</strong>.</p>
+
+                        <div class="definition-card bg-green border-green">
+                            <div class="definition-icon">📍</div>
+                            <div class="definition-content">
+                                <h4>Common Estimators</h4>
+                                <ul>
+                                    <li><strong>Sample mean $\bar{X}$</strong> estimates population mean $\mu$</li>
+                                    <li><strong>Sample proportion $\hat{p}$</strong> estimates population proportion $p$</li>
+                                    <li><strong>Sample variance $S^2$</strong> estimates population variance $\sigma^2$</li>
+                                    <li><strong>Sample standard deviation $S$</strong> estimates population standard deviation $\sigma$</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><em>Example:</em> In a poll of $n = 500$ voters, if $275$ support Candidate A, the point estimate for the true support proportion is $\hat{p} = 275/500 = 0.55$ (or 55%).</p>
+                    </article>
+                </div>
+
+                <!-- Sidebar with estimator properties -->
+                <aside class="theory-sidebar">
+                    <div class="info-card">
+                        <h4>🎯 Properties of Good Estimators</h4>
+                        <p>Not all estimators are created equal. Statisticians evaluate estimators based on several desirable properties:</p>
+                    </div>
+
+                    <div class="definition-card bg-blue border-blue">
+                        <div class="definition-icon">📐</div>
+                        <div class="definition-content">
+                            <h4>Unbiasedness</h4>
+                            <p>An estimator $\hat{\theta}$ is <strong>unbiased</strong> if its expected value equals the true parameter:</p>
+                            <div class="katex-block" style="font-size: 0.9em;">$$E[\hat{\theta}] = \theta$$</div>
+                            <p><em>Intuition:</em> On average (across many repeated samples), the estimator hits the target. No systematic over- or under-estimation.</p>
+                            <p><em>Example:</em> $\bar{X}$ is unbiased for $\mu$; $S^2$ is unbiased for $\sigma^2$.</p>
+                        </div>
+                    </div>
+
+                    <div class="definition-card bg-green border-green">
+                        <div class="definition-icon">⚡</div>
+                        <div class="definition-content">
+                            <h4>Efficiency</h4>
+                            <p>Among unbiased estimators, the one with the <strong>smallest variance</strong> is most efficient.</p>
+                            <div class="katex-block" style="font-size: 0.9em;">$$\text{Var}(\hat{\theta}_1) < \text{Var}(\hat{\theta}_2) \implies \hat{\theta}_1 \text{ is more efficient}$$</div>
+                            <p><em>Intuition:</em> Efficient estimators give more precise estimates—they cluster more tightly around the true value across repeated samples.</p>
+                        </div>
+                    </div>
+
+                    <div class="definition-card bg-purple border-purple">
+                        <div class="definition-icon">🔄</div>
+                        <div class="definition-content">
+                            <h4>Consistency</h4>
+                            <p>An estimator $\hat{\theta}_n$ is <strong>consistent</strong> if it converges in probability to the true parameter as sample size increases:</p>
+                            <div class="katex-block" style="font-size: 0.9em;">$$\hat{\theta}_n \xrightarrow{p} \theta \;\;\text{as } n \to \infty$$</div>
+                            <p><em>Intuition:</em> With enough data, a consistent estimator will get arbitrarily close to the truth. Most reasonable estimators are consistent.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>💡 Key Insight</h4>
+                        <p>The sample mean $\bar{X}$ is the "gold standard" estimator for $\mu$: it's unbiased, efficient (among linear estimators), and consistent. This is partly why the CLT—which describes $\bar{X}$'s behavior—is so central to statistics.</p>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="section-cta">
+                <p>See the Central Limit Theorem in action with any population shape!</p>
+                <button class="btn btn-primary cta-btn" data-navigate="clt-simulator">
+                    Launch CLT Simulator 🚀
+                </button>
+            </div>
+        </section>
+
+        <!-- CLT Simulator Section -->
+        <section class="content-section" id="section-clt-simulator" data-title="CLT Simulator">
+            <header class="section-header">
+                <span class="section-badge badge-green">Module 4 · Simulation</span>
+                <h2>Central Limit Theorem Simulator</h2>
+                <p class="section-subtitle">Watch the sampling distribution of the mean approach normality</p>
+            </header>
+
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Population Distribution</h3>
+
+                        <div class="slider-control">
+                            <label for="populationShape">
+                                Distribution Shape
+                            </label>
+                            <select id="populationShape" class="form-select">
+                                <option value="uniform">Uniform (flat)</option>
+                                <option value="exponential">Exponential (right-skewed)</option>
+                                <option value="bimodal">Bimodal (two peaks)</option>
+                            </select>
+                            <p class="control-note">Choose the underlying population shape</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>📏 Sample Size</h3>
+
+                        <div class="slider-control">
+                            <label for="sampleSizeN">
+                                Sample Size <span class="katex-inline">\(n\)</span> per Draw
+                                <output class="slider-value" id="sampleSizeNValue" for="sampleSizeN">5</output>
+                            </label>
+                            <input type="range" id="sampleSizeN" min="2" max="50" value="5" step="1"
+                                   aria-describedby="sampleSizeNDesc">
+                            <div class="slider-ticks" id="sampleSizeNDesc">
+                                <span>2</span><span>50</span>
+                            </div>
+                            <p class="control-note">Larger n → faster convergence to normal</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>🎮 Controls</h3>
+                        <div class="button-group">
+                            <button id="drawSampleBtn" class="btn btn-primary sim-btn" aria-label="Draw sample means">
+                                <span class="btn-icon">📊</span><span class="btn-label">Draw Sample Means</span>
+                            </button>
+                            <button id="resetCLTBtn" class="btn btn-outline sim-btn" aria-label="Reset simulation">
+                                <span class="btn-icon">⟲</span><span class="btn-label">Reset</span>
+                            </button>
+                        </div>
+                        <p class="control-note">Each click adds 200 sample means to the histogram</p>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Statistics</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Sample Means Drawn</div>
+                                <div class="stat-value" id="totalDraws">0</div>
+                                <div class="stat-subtitle">accumulated</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Mean of Means</div>
+                                <div class="stat-value" id="meanOfMeans">—</div>
+                                <div class="stat-subtitle">should ≈ μ</div>
+                            </div>
+                        </div>
+                        <div class="stat-highlight">
+                            <div class="stat-icon">📐</div>
+                            <div class="stat-highlight-content">
+                                <div class="stat-big-number" id="sdOfMeans">—</div>
+                                <div class="stat-label">SD of Sample Means</div>
+                                <div class="stat-subtitle" id="theoreticalSE">Theoretical SE = σ/√n</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3>Population vs Sampling Distribution</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-dot legend-dot-blue"></span>Population Distribution</span>
+                            <span class="legend-item"><span class="legend-dot legend-dot-green"></span>Sampling Distribution of Mean</span>
+                        </div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-half">
+                            <h4>Population Distribution</h4>
+                            <div class="chart-container">
+                                <canvas id="populationChart" aria-label="Population distribution" role="img"></canvas>
+                            </div>
+                            <p class="chart-caption">The underlying population (fixed shape)</p>
+                        </div>
+                        <div class="chart-half">
+                            <h4>Sampling Distribution of <span class="katex-inline">\(\bar{X}\)</span></h4>
+                            <div class="chart-container">
+                                <canvas id="samplingChart" aria-label="Sampling distribution histogram" role="img"></canvas>
+                            </div>
+                            <p class="chart-caption">Distribution of sample means (updates as you draw)</p>
+                        </div>
+                    </div>
+                    <div class="viz-footer">
+                        <p>As you draw more sample means (and/or increase <span class="katex-inline">\(n\)</span>), the sampling distribution approaches a normal curve—demonstrating the Central Limit Theorem.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
