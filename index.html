@@ -92,6 +92,18 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="#duality" class="nav-link" data-section="duality">
+                    <span class="nav-icon">⚖️</span>
+                    <span class="nav-text">CI vs Hypothesis Duality</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#case-studies" class="nav-link" data-section="case-studies">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Real-World Case Studies</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="#regression" class="nav-link" data-section="regression">
                     <span class="nav-icon">📈</span>
                     <span class="nav-text">Regression & Correlation</span>
@@ -104,7 +116,7 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
-            <span class="progress-text" id="progressText">0 / 8 completed</span>
+            <span class="progress-text" id="progressText">0 / 10 completed</span>
         </div>
     </nav>
 
@@ -723,7 +735,638 @@
             </div>
         </section>
 
-        <!-- Section 8: Regression & Correlation -->
+        <!-- Section 9: CI vs Hypothesis Duality -->
+        <section class="content-section" id="section-duality" data-title="CI vs Hypothesis Duality">
+            <div class="section-header">
+                <h2>⚖️ Confidence Interval & Hypothesis Test Duality</h2>
+                <p class="section-intro">Discover the fundamental mathematical relationship between confidence intervals and hypothesis tests. When a value falls outside the $(1-\alpha)$ confidence interval, it corresponds exactly to rejecting the null hypothesis at significance level $\alpha$.</p>
+            </div>
+
+            <div class="duality-dashboard">
+                <!-- Shared Controls -->
+                <div class="shared-controls card">
+                    <h3>🎛️ Shared Parameters</h3>
+                    <p class="control-note">Adjust these parameters to see both visualizations update in real-time</p>
+                    
+                    <div class="control-grid">
+                        <div class="control-item">
+                            <label for="dualSampleMean">Sample Mean ($\bar{x}$)</label>
+                            <input type="range" id="dualSampleMean" min="-3" max="3" value="1.5" step="0.1">
+                            <div class="slider-value"><span id="dualSampleMeanVal">1.5</span></div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label for="dualAlpha">Significance Level ($\alpha$)</label>
+                            <input type="range" id="dualAlpha" min="0.001" max="0.1" value="0.05" step="0.001">
+                            <div class="slider-value"><span id="dualAlphaVal">0.05</span></div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label for="dualN">Sample Size ($n$)</label>
+                            <input type="range" id="dualN" min="5" max="100" value="25" step="1">
+                            <div class="slider-value"><span id="dualNVal">25</span></div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label for="dualSigma">Population Std Dev ($\sigma$)</label>
+                            <input type="range" id="dualSigma" min="0.5" max="3" value="1" step="0.1">
+                            <div class="slider-value"><span id="dualSigmaVal">1</span></div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label for="dualMu0">Hypothesized Mean ($\mu_0$)</label>
+                            <input type="range" id="dualMu0" min="-3" max="3" value="0" step="0.1">
+                            <div class="slider-value"><span id="dualMu0Val">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Left Panel: Confidence Interval -->
+                <div class="duality-panel card">
+                    <div class="panel-header">
+                        <h3>📊 Confidence Interval View</h3>
+                        <div class="panel-status" id="ciStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="viz-container">
+                        <canvas id="ciDualityChart" aria-label="Confidence Interval visualization"></canvas>
+                    </div>
+                    
+                    <div class="panel-results">
+                        <div class="result-row">
+                            <span class="result-label">Confidence Level:</span>
+                            <span class="result-value" id="confLevelDisplay">95%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">CI Lower Bound:</span>
+                            <span class="result-value text-blue" id="ciLower">—</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">CI Upper Bound:</span>
+                            <span class="result-value text-blue" id="ciUpper">—</span>
+                        </div>
+                        <div class="result-row highlight">
+                            <span class="result-label">Does $\mu_0$ fall in CI?</span>
+                            <span class="result-value" id="mu0InCi">—</span>
+                        </div>
+                    </div>
+                    
+                    <div class="interpretation-box">
+                        <p id="ciInterpretation">The confidence interval represents the range of plausible values for the population mean.</p>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Hypothesis Test -->
+                <div class="duality-panel card">
+                    <div class="panel-header">
+                        <h3>🔬 Hypothesis Test View</h3>
+                        <div class="panel-status" id="htStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="viz-container">
+                        <canvas id="htDualityChart" aria-label="Hypothesis Test visualization"></canvas>
+                    </div>
+                    
+                    <div class="panel-results">
+                        <div class="result-row">
+                            <span class="result-label">Test Statistic (z):</span>
+                            <span class="result-value" id="testStatDisplay">—</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Critical Values:</span>
+                            <span class="result-value text-red" id="criticalValuesDisplay">—</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">P-Value:</span>
+                            <span class="result-value" id="pValueDisplay">—</span>
+                        </div>
+                        <div class="result-row highlight">
+                            <span class="result-label">Decision:</span>
+                            <span class="result-value" id="htDecision">—</span>
+                        </div>
+                    </div>
+                    
+                    <div class="interpretation-box">
+                        <p id="htInterpretation">The hypothesis test determines if there's enough evidence to reject the null hypothesis.</p>
+                    </div>
+                </div>
+
+                <!-- Connection Explanation -->
+                <div class="connection-explanation card">
+                    <h3>🔗 The Mathematical Connection</h3>
+                    <div class="math-derivation">
+                        <p><strong>Key Insight:</strong> For a two-tailed test at level $\alpha$, the following are equivalent:</p>
+                        <ol class="equivalence-list">
+                            <li>
+                                <span class="eq-number">1</span>
+                                <div class="eq-content">
+                                    <p>$\mu_0$ falls <strong>outside</strong> the $(1-\alpha)$ confidence interval</p>
+                                    <p class="eq-formula">$$\mu_0 \notin \left[\bar{x} - z_{\alpha/2}\frac{\sigma}{\sqrt{n}}, \bar{x} + z_{\alpha/2}\frac{\sigma}{\sqrt{n}}\right]$$</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="eq-number">2</span>
+                                <div class="eq-content">
+                                    <p>The test statistic falls in the <strong>rejection region</strong></p>
+                                    <p class="eq-formula">$$|z| = \left|\frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}}\right| > z_{\alpha/2}$$</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="eq-number">3</span>
+                                <div class="eq-content">
+                                    <p>The p-value is <strong>less than</strong> $\alpha$</p>
+                                    <p class="eq-formula">$$p\text{-value} < \alpha$$</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="duality-proof">
+                        <h4>Why This Works:</h4>
+                        <p>Both methods use the same underlying sampling distribution and standard error. The confidence interval inverts the hypothesis test: instead of fixing $\mu_0$ and checking if $\bar{x}$ is unusual, we fix $\bar{x}$ and ask which values of $\mu_0$ would not be rejected.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10: Real-World Case Studies -->
+        <section class="content-section" id="section-case-studies" data-title="Real-World Case Studies">
+            <div class="section-header">
+                <h2>📋 Real-World Case Studies</h2>
+                <p class="section-intro">Apply hypothesis testing concepts to three practical scenarios from different domains. Each case study includes raw data, step-by-step analysis, and actionable conclusions.</p>
+            </div>
+
+            <div class="case-study-tabs">
+                <button class="tab-btn active" data-tab="clinical">🏥 Clinical Trial</button>
+                <button class="tab-btn" data-tab="quality">🏭 Quality Control</button>
+                <button class="tab-btn" data-tab="polling">📊 Political Polling</button>
+            </div>
+
+            <!-- Case Study 1: Clinical Trial -->
+            <div class="case-study-content active" id="clinical-case">
+                <div class="case-header">
+                    <h3>🏥 Case Study 1: Drug Efficacy Clinical Trial</h3>
+                    <p class="case-subtitle">Testing whether a new medication reduces blood pressure more effectively than a placebo</p>
+                </div>
+
+                <div class="case-grid">
+                    <div class="case-info card">
+                        <h4>📋 Study Design</h4>
+                        <ul class="info-list">
+                            <li><strong>Type:</strong> Randomized Controlled Trial (RCT)</li>
+                            <li><strong>Participants:</strong> 200 patients with hypertension</li>
+                            <li><strong>Groups:</strong> Treatment (n=100) vs Placebo (n=100)</li>
+                            <li><strong>Duration:</strong> 12 weeks</li>
+                            <li><strong>Primary Outcome:</strong> Reduction in systolic blood pressure (mmHg)</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-data card">
+                        <h4>📊 Raw Data Summary</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Group</th>
+                                    <th>n</th>
+                                    <th>Mean Reduction</th>
+                                    <th>Std Dev</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Treatment</td>
+                                    <td>100</td>
+                                    <td id="clinicalTreatmentMean">12.5 mmHg</td>
+                                    <td>8.2 mmHg</td>
+                                </tr>
+                                <tr>
+                                    <td>Placebo</td>
+                                    <td>100</td>
+                                    <td id="clinicalPlaceboMean">3.2 mmHg</td>
+                                    <td>7.8 mmHg</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="data-note">Data simulated based on typical antihypertensive drug trials</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section card">
+                    <h4>🧮 Step-by-Step Mathematical Analysis</h4>
+                    
+                    <div class="step-container">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>State the Hypotheses</h5>
+                            <div class="math-block">
+                                <p><strong>Null Hypothesis ($H_0$):</strong> The drug has no effect on blood pressure reduction</p>
+                                <p class="formula">$$H_0: \mu_{\text{treatment}} - \mu_{\text{placebo}} = 0$$</p>
+                                <p><strong>Alternative Hypothesis ($H_1$):</strong> The drug reduces blood pressure more than placebo</p>
+                                <p class="formula">$$H_1: \mu_{\text{treatment}} - \mu_{\text{placebo}} > 0$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Choose Significance Level</h5>
+                            <div class="math-block">
+                                <p>We use $\alpha = 0.05$ (standard for clinical trials)</p>
+                                <p>This means we accept a 5% risk of falsely claiming the drug works when it doesn't (Type I error)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Calculate the Test Statistic</h5>
+                            <div class="math-block">
+                                <p>Since we have two independent samples with known standard deviations, we use a two-sample z-test:</p>
+                                <p class="formula">$$z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)_0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$</p>
+                                <p>Plugging in our values:</p>
+                                <p class="formula">$$z = \frac{(12.5 - 3.2) - 0}{\sqrt{\frac{8.2^2}{100} + \frac{7.8^2}{100}}} = \frac{9.3}{\sqrt{0.6724 + 0.6084}} = \frac{9.3}{1.132} = 8.22$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Determine the P-Value</h5>
+                            <div class="math-block">
+                                <p>For a one-tailed test with $z = 8.22$:</p>
+                                <p class="formula">$$p\text{-value} = P(Z > 8.22) < 0.0001$$</p>
+                                <p>This extremely small p-value indicates the observed difference is highly unlikely under $H_0$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Make a Decision</h5>
+                            <div class="math-block">
+                                <p>Since $p\text{-value} < 0.0001 < \alpha = 0.05$, we <strong>reject $H_0$</strong></p>
+                                <p class="conclusion-box">There is statistically significant evidence that the drug reduces blood pressure more than placebo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-section card">
+                    <h4>📈 Visualization</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="clinicalChart"></canvas>
+                    </div>
+                    <div class="viz-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Effect Size (Cohen's d)</span>
+                            <span class="stat-value" id="clinicalEffectSize">1.16</span>
+                            <span class="stat-desc">Large effect</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">95% CI for Difference</span>
+                            <span class="stat-value" id="clinicalCI">[7.08, 11.52]</span>
+                            <span class="stat-desc">mmHg</span>
+                        </div>
+                        <div class="stat-box highlight-green">
+                            <span class="stat-label">Conclusion</span>
+                            <span class="stat-value">Significant</span>
+                            <span class="stat-desc">Drug is effective</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conclusion-section card">
+                    <h4>💼 Actionable Clinical Conclusion</h4>
+                    <div class="conclusion-content">
+                        <p><strong>Recommendation:</strong> The new medication demonstrates statistically significant and clinically meaningful blood pressure reduction compared to placebo.</p>
+                        <p><strong>Clinical Significance:</strong> With an average additional reduction of 9.3 mmHg, this drug could substantially reduce cardiovascular risk. The large effect size (d = 1.16) indicates the treatment effect is not just statistically significant but also practically important.</p>
+                        <p><strong>Next Steps:</strong> Proceed to Phase III trials with larger, more diverse populations. Monitor for potential side effects and long-term efficacy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Study 2: Quality Control -->
+            <div class="case-study-content" id="quality-case">
+                <div class="case-header">
+                    <h3>🏭 Case Study 2: Factory Quality Control</h3>
+                    <p class="case-subtitle">Determining if a production line is manufacturing bolts within specified tolerance limits</p>
+                </div>
+
+                <div class="case-grid">
+                    <div class="case-info card">
+                        <h4>📋 Process Overview</h4>
+                        <ul class="info-list">
+                            <li><strong>Product:</strong> M10 steel bolts</li>
+                            <li><strong>Specification:</strong> Target diameter = 10.00 mm</li>
+                            <li><strong>Tolerance:</strong> ±0.05 mm</li>
+                            <li><strong>Quality Standard:</strong> ISO 9001</li>
+                            <li><strong>Sampling Method:</strong> Random sampling every hour</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-data card">
+                        <h4>📊 Sample Data (Last Hour)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sample Size (n)</td>
+                                    <td>50 bolts</td>
+                                </tr>
+                                <tr>
+                                    <td>Sample Mean ($\bar{x}$)</td>
+                                    <td id="qualitySampleMean">10.03 mm</td>
+                                </tr>
+                                <tr>
+                                    <td>Sample Std Dev (s)</td>
+                                    <td>0.02 mm</td>
+                                </tr>
+                                <tr>
+                                    <td>Target ($\mu_0$)</td>
+                                    <td>10.00 mm</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="data-note">Measurements taken with digital micrometer (±0.001 mm accuracy)</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section card">
+                    <h4>🧮 Step-by-Step Mathematical Analysis</h4>
+                    
+                    <div class="step-container">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>State the Hypotheses</h5>
+                            <div class="math-block">
+                                <p><strong>Null Hypothesis ($H_0$):</strong> The production line is calibrated correctly</p>
+                                <p class="formula">$$H_0: \mu = 10.00 \text{ mm}$$</p>
+                                <p><strong>Alternative Hypothesis ($H_1$):</strong> The production line is NOT calibrated correctly (two-tailed)</p>
+                                <p class="formula">$$H_1: \mu \neq 10.00 \text{ mm}$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Choose Significance Level</h5>
+                            <div class="math-block">
+                                <p>We use $\alpha = 0.01$ (stricter standard for quality control)</p>
+                                <p>This minimizes the risk of unnecessary production stops (Type I error)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Calculate the Test Statistic</h5>
+                            <div class="math-block">
+                                <p>Since population standard deviation is unknown and n < 30, we use a t-test:</p>
+                                <p class="formula">$$t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}$$</p>
+                                <p>Plugging in our values:</p>
+                                <p class="formula">$$t = \frac{10.03 - 10.00}{0.02/\sqrt{50}} = \frac{0.03}{0.00283} = 10.61$$</p>
+                                <p>Degrees of freedom: $df = n - 1 = 49$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Determine Critical Values and P-Value</h5>
+                            <div class="math-block">
+                                <p>For a two-tailed test with $df = 49$ and $\alpha = 0.01$:</p>
+                                <p class="formula">$$t_{\text{critical}} = \pm 2.68$$</p>
+                                <p>P-value calculation:</p>
+                                <p class="formula">$$p\text{-value} = 2 \times P(T > 10.61) < 0.0001$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Make a Decision</h5>
+                            <div class="math-block">
+                                <p>Since $|t| = 10.61 > 2.68$ and $p\text{-value} < 0.01$, we <strong>reject $H_0$</strong></p>
+                                <p class="conclusion-box warning">The production process is statistically significantly different from the target. Investigation required.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-section card">
+                    <h4>📈 Visualization</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="qualityChart"></canvas>
+                    </div>
+                    <div class="viz-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Test Statistic (t)</span>
+                            <span class="stat-value" id="qualityTStat">10.61</span>
+                            <span class="stat-desc">df = 49</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">99% CI for Mean</span>
+                            <span class="stat-value" id="qualityCI">[10.022, 10.038]</span>
+                            <span class="stat-desc">mm</span>
+                        </div>
+                        <div class="stat-box highlight-red">
+                            <span class="stat-label">Process Status</span>
+                            <span class="stat-value">Out of Control</span>
+                            <span class="stat-desc">Adjustment needed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conclusion-section card">
+                    <h4>💼 Actionable Business Conclusion</h4>
+                    <div class="conclusion-content">
+                        <p><strong>Immediate Action Required:</strong> The production line is producing bolts that are statistically significantly larger than the target specification. While the difference (0.03 mm) is within tolerance limits (±0.05 mm), the statistical signal indicates a systematic shift.</p>
+                        <p><strong>Root Cause Analysis:</strong> Potential causes include tool wear, temperature changes, or material batch variations. The quality team should:</p>
+                        <ul class="action-list">
+                            <li>Inspect and possibly recalibrate the threading machine</li>
+                            <li>Check recent maintenance logs</li>
+                            <li>Verify raw material specifications</li>
+                            <li>Increase sampling frequency until process is stabilized</li>
+                        </ul>
+                        <p><strong>Business Impact:</strong> Early detection prevents potential customer complaints and maintains ISO 9001 compliance. The cost of adjustment is minimal compared to the cost of recalls or lost contracts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Study 3: Political Polling -->
+            <div class="case-study-content" id="polling-case">
+                <div class="case-header">
+                    <h3>📊 Case Study 3: Political Polling Analysis</h3>
+                    <p class="case-subtitle">Assessing whether a candidate has majority support (>50%) in an upcoming election</p>
+                </div>
+
+                <div class="case-grid">
+                    <div class="case-info card">
+                        <h4>📋 Poll Details</h4>
+                        <ul class="info-list">
+                            <li><strong>Election:</strong> State gubernatorial race</li>
+                            <li><strong>Polling Period:</strong> October 15-20, 2024</li>
+                            <li><strong>Methodology:</strong> Random digit dialing (RDD)</li>
+                            <li><strong>Sample Type:</strong> Likely voters</li>
+                            <li><strong>Margin of Error:</strong> ±3.1% at 95% confidence</li>
+                        </ul>
+                    </div>
+
+                    <div class="case-data card">
+                        <h4>📊 Poll Results</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sample Size (n)</td>
+                                    <td>1,000 voters</td>
+                                </tr>
+                                <tr>
+                                    <td>Support for Candidate A</td>
+                                    <td id="pollingSupport">520 voters (52%)</td>
+                                </tr>
+                                <tr>
+                                    <td>Sample Proportion ($\hat{p}$)</td>
+                                    <td>0.52</td>
+                                </tr>
+                                <tr>
+                                    <td>Threshold for Majority</td>
+                                    <td>0.50 (50%)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="data-note">Weighted by age, gender, and party registration to match census demographics</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section card">
+                    <h4>🧮 Step-by-Step Mathematical Analysis</h4>
+                    
+                    <div class="step-container">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>State the Hypotheses</h5>
+                            <div class="math-block">
+                                <p><strong>Null Hypothesis ($H_0$):</strong> Candidate does NOT have majority support</p>
+                                <p class="formula">$$H_0: p \leq 0.50$$</p>
+                                <p><strong>Alternative Hypothesis ($H_1$):</strong> Candidate HAS majority support (one-tailed)</p>
+                                <p class="formula">$$H_1: p > 0.50$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Choose Significance Level</h5>
+                            <div class="math-block">
+                                <p>We use $\alpha = 0.05$ (standard for polling analysis)</p>
+                                <p>Note: Pollsters often prefer conservative interpretations to avoid false claims</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Calculate the Test Statistic</h5>
+                            <div class="math-block">
+                                <p>For proportions, we use a one-sample z-test:</p>
+                                <p class="formula">$$z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$</p>
+                                <p>Plugging in our values:</p>
+                                <p class="formula">$$z = \frac{0.52 - 0.50}{\sqrt{\frac{0.50 \times 0.50}{1000}}} = \frac{0.02}{\sqrt{0.00025}} = \frac{0.02}{0.0158} = 1.265$$</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Determine the P-Value</h5>
+                            <div class="math-block">
+                                <p>For a one-tailed test with $z = 1.265$:</p>
+                                <p class="formula">$$p\text{-value} = P(Z > 1.265) = 0.103$$</p>
+                                <p>This means there's a 10.3% chance of observing 52% support even if true support is only 50%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-container">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Make a Decision</h5>
+                            <div class="math-block">
+                                <p>Since $p\text{-value} = 0.103 > \alpha = 0.05$, we <strong>fail to reject $H_0$</strong></p>
+                                <p class="conclusion-box caution">While the poll shows 52% support, this is NOT statistically significantly greater than 50%. The race is too close to call.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-section card">
+                    <h4>📈 Visualization</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="pollingChart"></canvas>
+                    </div>
+                    <div class="viz-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Test Statistic (z)</span>
+                            <span class="stat-value" id="pollingZStat">1.265</span>
+                            <span class="stat-desc">One-tailed test</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">95% CI for Proportion</span>
+                            <span class="stat-value" id="pollingCI">[0.489, 0.551]</span>
+                            <span class="stat-desc">Includes 0.50</span>
+                        </div>
+                        <div class="stat-box highlight-yellow">
+                            <span class="stat-label">Statistical Conclusion</span>
+                            <span class="stat-value">Inconclusive</span>
+                            <span class="stat-desc">Cannot claim majority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conclusion-section card">
+                    <h4>💼 Actionable Political Conclusion</h4>
+                    <div class="conclusion-content">
+                        <p><strong>Media Interpretation:</strong> Responsible news outlets should report this as a "statistical tie" or "too close to call" rather than declaring Candidate A in the lead. The 2-point margin is within the margin of error.</p>
+                        <p><strong>Campaign Strategy Implications:</strong></p>
+                        <ul class="action-list">
+                            <li><strong>Candidate A's Campaign:</strong> Cannot be complacent. The apparent lead is not statistically reliable. Must continue aggressive voter outreach and get-out-the-vote efforts.</li>
+                            <li><strong>Candidate B's Campaign:</strong> Still very much in the race. Should emphasize momentum and frame the narrative as a competitive contest.</li>
+                        </ul>
+                        <p><strong>Broader Context:</strong> This illustrates why pollsters emphasize margins of error. A single poll showing 52% does not provide sufficient evidence of majority support. Aggregating multiple polls or increasing sample size would provide more definitive answers.</p>
+                        <p class="key-insight"><strong>Key Insight:</strong> Statistical significance matters! Without it, we risk making decisions based on random sampling variation rather than true population differences.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 11: Regression & Correlation -->
         <section class="content-section" id="section-regression" data-title="Regression & Correlation">
             <div class="section-placeholder">
                 <h2>Regression & Correlation</h2>

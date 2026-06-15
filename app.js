@@ -839,3 +839,231 @@ if (typeof module !== 'undefined' && module.exports) {
         Progress
     };
 }
+// ============================================
+// SECTION 9: DUALITY SIMULATOR MODULE
+// ============================================
+const DualitySimulator = {
+    ciChart: null, htChart: null,
+    state: { sampleMean: 1.5, alpha: 0.05, n: 25, sigma: 1, mu0: 0 },
+    elements: {},
+    
+    init() { this.cacheElements(); this.bindEvents(); this.initCharts(); this.update(); },
+    
+    cacheElements() {
+        this.elements = {
+            sampleMean: document.getElementById('dualSampleMean'),
+            alpha: document.getElementById('dualAlpha'),
+            n: document.getElementById('dualN'),
+            sigma: document.getElementById('dualSigma'),
+            mu0: document.getElementById('dualMu0'),
+            sampleMeanVal: document.getElementById('dualSampleMeanVal'),
+            alphaVal: document.getElementById('dualAlphaVal'),
+            nVal: document.getElementById('dualNVal'),
+            sigmaVal: document.getElementById('dualSigmaVal'),
+            mu0Val: document.getElementById('dualMu0Val'),
+            confLevelDisplay: document.getElementById('confLevelDisplay'),
+            ciLower: document.getElementById('ciLower'),
+            ciUpper: document.getElementById('ciUpper'),
+            mu0InCi: document.getElementById('mu0InCi'),
+            ciInterpretation: document.getElementById('ciInterpretation'),
+            testStatDisplay: document.getElementById('testStatDisplay'),
+            criticalValuesDisplay: document.getElementById('criticalValuesDisplay'),
+            pValueDisplay: document.getElementById('pValueDisplay'),
+            htDecision: document.getElementById('htDecision'),
+            htInterpretation: document.getElementById('htInterpretation'),
+            ciStatus: document.getElementById('ciStatus'),
+            htStatus: document.getElementById('htStatus')
+        };
+    },
+    
+    bindEvents() {
+        ['sampleMean', 'alpha', 'n', 'sigma', 'mu0'].forEach(id => {
+            const el = this.elements[id];
+            if (el) el.addEventListener('input', () => {
+                this.state.sampleMean = parseFloat(this.elements.sampleMean.value);
+                this.state.alpha = parseFloat(this.elements.alpha.value);
+                this.state.n = parseInt(this.elements.n.value);
+                this.state.sigma = parseFloat(this.elements.sigma.value);
+                this.state.mu0 = parseFloat(this.elements.mu0.value);
+                this.elements.sampleMeanVal.textContent = this.state.sampleMean.toFixed(1);
+                this.elements.alphaVal.textContent = this.state.alpha.toFixed(3);
+                this.elements.nVal.textContent = this.state.n;
+                this.elements.sigmaVal.textContent = this.state.sigma.toFixed(1);
+                this.elements.mu0Val.textContent = this.state.mu0.toFixed(1);
+                this.update();
+            });
+        });
+    },
+    
+    getZCritical(alpha) {
+        const p = 1 - alpha / 2;
+        if (p >= 0.995) return 2.576;
+        if (p >= 0.99) return 2.326;
+        if (p >= 0.975) return 1.96;
+        if (p >= 0.95) return 1.645;
+        if (p >= 0.90) return 1.282;
+        return 1.96 + (p - 0.975) * 10;
+    },
+    
+    calculate() {
+        const { sampleMean, alpha, n, sigma, mu0 } = this.state;
+        const se = sigma / Math.sqrt(n);
+        const zCritical = this.getZCritical(alpha);
+        const marginOfError = zCritical * se;
+        const ciLower = sampleMean - marginOfError;
+        const ciUpper = sampleMean + marginOfError;
+        const confLevel = ((1 - alpha) * 100).toFixed(0);
+        const zStat = (sampleMean - mu0) / se;
+        const pValue = 2 * (1 - this.standardNormalCDF(Math.abs(zStat)));
+        const rejectH0 = Math.abs(zStat) > zCritical;
+        const mu0InsideCI = mu0 >= ciLower && mu0 <= ciUpper;
+        return { se, zCritical, ciLower, ciUpper, confLevel, zStat, pValue, rejectH0, mu0InsideCI };
+    },
+    
+    standardNormalCDF(z) {
+        const t = 1 / (1 + 0.2316419 * Math.abs(z));
+        const d = 0.3989423 * Math.exp(-z * z / 2);
+        const prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+        return z > 0 ? 1 - prob : prob;
+    },
+    
+    initCharts() {
+        const ciCtx = document.getElementById('ciDualityChart');
+        const htCtx = document.getElementById('htDualityChart');
+        if (!ciCtx || !htCtx) return;
+        
+        this.ciChart = new Chart(ciCtx, {
+            type: 'bar',
+            data: { labels: ['CI'], datasets: [{ label: 'CI Range', data: [0], backgroundColor: 'rgba(100, 181, 246, 0.6)', borderColor: '#64B5F6', borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: false, title: { display: true, text: 'Value' } } } }
+        });
+        
+        this.htChart = new Chart(htCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'z-score' }, min: -4, max: 4 }, y: { beginAtZero: true, max: 0.45 } } }
+        });
+    },
+    
+    update() {
+        const r = this.calculate();
+        this.elements.confLevelDisplay.textContent = r.confLevel + '%';
+        this.elements.ciLower.textContent = r.ciLower.toFixed(3);
+        this.elements.ciUpper.textContent = r.ciUpper.toFixed(3);
+        const inCI = r.mu0InsideCI;
+        this.elements.mu0InCi.textContent = inCI ? 'Yes ✓' : 'No ✗';
+        this.elements.mu0InCi.style.color = inCI ? 'var(--color-success)' : 'var(--color-error)';
+        this.elements.ciInterpretation.textContent = inCI ? 'μ₀ falls within the CI - plausible value.' : 'μ₀ falls outside the CI - NOT plausible.';
+        this.elements.ciStatus.className = 'panel-status ' + (inCI ? 'success' : 'fail');
+        this.elements.ciStatus.querySelector('.status-text').textContent = inCI ? 'μ₀ in CI' : 'μ₀ outside CI';
+        this.elements.testStatDisplay.textContent = r.zStat.toFixed(3);
+        this.elements.criticalValuesDisplay.textContent = '±' + r.zCritical.toFixed(3);
+        this.elements.pValueDisplay.textContent = r.pValue.toFixed(4);
+        const decision = r.rejectH0 ? 'Reject H₀' : 'Fail to Reject H₀';
+        this.elements.htDecision.textContent = decision;
+        this.elements.htDecision.style.color = r.rejectH0 ? 'var(--color-error)' : 'var(--color-success)';
+        this.elements.htInterpretation.textContent = r.rejectH0 ? 'Sufficient evidence to reject H₀ at α=' + this.state.alpha : 'Insufficient evidence to reject H₀ at α=' + this.state.alpha;
+        this.elements.htStatus.className = 'panel-status ' + (r.rejectH0 ? 'fail' : 'success');
+        this.elements.htStatus.querySelector('.status-text').textContent = r.rejectH0 ? 'Reject H₀' : 'Fail to Reject H₀';
+        this.updateCIChart(r);
+        this.updateHTChart(r);
+    },
+    
+    updateCIChart(r) {
+        if (!this.ciChart) return;
+        const range = r.ciUpper - r.ciLower;
+        const padding = range * 0.3;
+        this.ciChart.data.datasets[0].data = [r.ciLower];
+        this.ciChart.options.scales.y.min = r.ciLower - padding;
+        this.ciChart.options.scales.y.max = r.ciUpper + padding;
+        if (!this.ciChart.data.datasets[1]) {
+            this.ciChart.data.datasets.push({ label: 'μ₀', data: [this.state.mu0], type: 'scatter', backgroundColor: r.mu0InsideCI ? '#4CAF50' : '#F44336', pointRadius: 8, pointStyle: 'star' });
+        } else {
+            this.ciChart.data.datasets[1].data = [this.state.mu0];
+            this.ciChart.data.datasets[1].backgroundColor = r.mu0InsideCI ? '#4CAF50' : '#F44336';
+        }
+        this.ciChart.update('none');
+    },
+    
+    updateHTChart(r) {
+        if (!this.htChart) return;
+        const labels = [], data = [], rejData = [];
+        for (let z = -4; z <= 4; z += 0.1) {
+            labels.push(z.toFixed(1));
+            const y = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-z * z / 2);
+            data.push(y);
+            rejData.push(Math.abs(z) > r.zCritical ? y : null);
+        }
+        this.htChart.data.labels = labels;
+        this.htChart.data.datasets = [
+            { label: 'Standard Normal', data: data, borderColor: '#64B5F6', backgroundColor: 'rgba(100, 181, 246, 0.2)', fill: true, tension: 0.4 },
+            { label: 'Rejection Region', data: rejData, borderColor: '#F44336', backgroundColor: 'rgba(244, 67, 54, 0.3)', fill: true, tension: 0.4 },
+            { label: 'Test Statistic', data: [{x: r.zStat.toFixed(1), y: 0}], type: 'scatter', backgroundColor: r.rejectH0 ? '#F44336' : '#4CAF50', pointRadius: 10, pointStyle: 'star' }
+        ];
+        this.htChart.update('none');
+    },
+    
+    destroy() { if (this.ciChart) { this.ciChart.destroy(); this.ciChart = null; } if (this.htChart) { this.htChart.destroy(); this.htChart = null; } }
+};
+
+// ============================================
+// SECTION 10: CASE STUDY VISUALIZATION MODULE
+// ============================================
+const CaseStudyViz = {
+    clinicalChart: null, qualityChart: null, pollingChart: null,
+    init() { this.initClinicalChart(); this.initQualityChart(); this.initPollingChart(); },
+    initClinicalChart() {
+        const ctx = document.getElementById('clinicalChart'); if (!ctx) return;
+        this.clinicalChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['Treatment', 'Placebo'], datasets: [{ label: 'Mean BP Reduction (mmHg)', data: [12.5, 3.2], backgroundColor: ['#4CAF50', '#9E9E9E'], borderColor: ['#388E3C', '#757575'], borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Blood Pressure Reduction by Group', font: { size: 16 } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Reduction (mmHg)' } } } }
+        });
+    },
+    initQualityChart() {
+        const ctx = document.getElementById('qualityChart'); if (!ctx) return;
+        const labels = [], data = [];
+        for (let t = -4; t <= 4; t += 0.1) { labels.push(t.toFixed(1)); data.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-t * t / 2) * 0.9); }
+        this.qualityChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labels, datasets: [{ label: 't-Distribution', data: data, borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.2)', fill: true, tension: 0.4 }, { label: 'Observed t', data: [{x: '10.6', y: 0}], type: 'scatter', backgroundColor: '#F44336', pointRadius: 10, pointStyle: 'star' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 't-Distribution with Observed Test Statistic', font: { size: 16 } } }, scales: { x: { title: { display: true, text: 't-value' } }, y: { beginAtZero: true, display: false } } }
+        });
+    },
+    initPollingChart() {
+        const ctx = document.getElementById('pollingChart'); if (!ctx) return;
+        this.pollingChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['Candidate A', 'Threshold (50%)'], datasets: [{ label: 'Support Level', data: [0.52, 0.50], backgroundColor: ['#2196F3', '#9E9E9E'], borderColor: ['#1976D2', '#757575'], borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Poll Support vs Majority Threshold', font: { size: 16 } } }, scales: { y: { beginAtZero: false, min: 0.45, max: 0.60, ticks: { callback: v => (v * 100).toFixed(0) + '%' }, title: { display: true, text: 'Support Proportion' } } } }
+        });
+    },
+    destroy() { if (this.clinicalChart) this.clinicalChart.destroy(); if (this.qualityChart) this.qualityChart.destroy(); if (this.pollingChart) this.pollingChart.destroy(); }
+};
+
+// Router integration
+(function() {
+    const orig = Router.handleSectionChange;
+    Router.handleSectionChange = function(sectionId) {
+        if (orig) orig.call(this, sectionId);
+        setTimeout(() => {
+            if (sectionId === 'duality') DualitySimulator.init();
+            else if (sectionId === 'case-studies') { CaseStudyViz.init(); setupCaseStudyTabs(); }
+            else { if (typeof DualitySimulator !== 'undefined' && DualitySimulator.ciChart) DualitySimulator.destroy(); if (typeof CaseStudyViz !== 'undefined' && CaseStudyViz.clinicalChart) CaseStudyViz.destroy(); }
+        }, 100);
+    };
+})();
+
+function setupCaseStudyTabs() {
+    const tabs = document.querySelectorAll('.tab-btn'), contents = document.querySelectorAll('.case-study-content');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active');
+            contents.forEach(c => { c.classList.remove('active'); if (c.id === target + '-case') c.classList.add('active'); });
+            if (typeof renderMathInElement !== 'undefined') renderMathInElement(document.getElementById('section-case-studies'), { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+        });
+    });
+}
+
+if (typeof module !== 'undefined' && module.exports) { module.exports.DualitySimulator = DualitySimulator; module.exports.CaseStudyViz = CaseStudyViz; }
