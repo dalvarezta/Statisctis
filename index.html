@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive Statistics Learning Platform">
+    <title>StatLearn - Interactive Statistics Education</title>
+
+    <!-- KaTeX for Mathematical Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ============================================
+         HEADER - Contains branding and mobile toggle
+         ============================================ -->
+    <header class="header" role="banner">
+        <button class="hamburger" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="header-brand">
+            <span class="brand-icon">📊</span>
+            <h1 class="brand-title">StatLearn</h1>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ============================================
+         SIDEBAR NAVIGATION - 8 Learning Modules
+         ============================================ -->
+    <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="#introduction" class="nav-link" data-section="introduction">
+                    <span class="nav-icon">📘</span>
+                    <span class="nav-text">Introduction to Statistics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#descriptive" class="nav-link" data-section="descriptive">
+                    <span class="nav-icon">📐</span>
+                    <span class="nav-text">Descriptive Statistics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#probability" class="nav-link" data-section="probability">
+                    <span class="nav-icon">🎲</span>
+                    <span class="nav-text">Probability Distributions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#sampling" class="nav-link" data-section="sampling">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">Sampling & Estimation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#ci-theory" class="nav-link" data-section="ci-theory">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-text">CI: Theory & Formulas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#ci-simulator" class="nav-link" data-section="ci-simulator">
+                    <span class="nav-icon">🧪</span>
+                    <span class="nav-text">CI: Interactive Simulator</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#hypothesis" class="nav-link" data-section="hypothesis">
+                    <span class="nav-icon">🔬</span>
+                    <span class="nav-text">Hypothesis Testing</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#errors" class="nav-link" data-section="errors">
+                    <span class="nav-icon">⚠️</span>
+                    <span class="nav-text">Type I & Type II Errors</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#regression" class="nav-link" data-section="regression">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Regression & Correlation</span>
+                </a>
+            </li>
+        </ul>
+        <!-- Progress Tracker -->
+        <div class="sidebar-progress">
+            <div class="progress-label">Learning Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <span class="progress-text" id="progressText">0 / 8 completed</span>
+        </div>
+    </nav>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================
+         MAIN CONTENT AREA - Section Switching Target
+         ============================================ -->
+    <main class="main-content" id="mainContent" role="main">
+
+        <!-- Section 1: Introduction -->
+        <section class="content-section" id="section-introduction" data-title="Introduction to Statistics">
+            <div class="section-placeholder">
+                <h2>Introduction to Statistics</h2>
+                <p class="placeholder-text">Content will include: What is statistics? Types of data, population vs sample, descriptive vs inferential statistics.</p>
+                <div class="placeholder-visual">[ Interactive diagram placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 2: Descriptive Statistics -->
+        <section class="content-section" id="section-descriptive" data-title="Descriptive Statistics">
+            <div class="section-placeholder">
+                <h2>Descriptive Statistics</h2>
+                <p class="placeholder-text">Content will include: Measures of central tendency (mean, median, mode), measures of dispersion (variance, standard deviation, range), and skewness.</p>
+                <div class="placeholder-visual">[ Chart.js histogram placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 3: Probability Distributions -->
+        <section class="content-section" id="section-probability" data-title="Probability Distributions">
+            <div class="section-placeholder">
+                <h2>Probability Distributions</h2>
+                <p class="placeholder-text">Content will include: Normal distribution, binomial distribution, Poisson distribution, t-distribution, and chi-square distribution.</p>
+                <div class="placeholder-visual">[ Interactive normal curve placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 4: Sampling & Estimation -->
+        <section class="content-section" id="section-sampling" data-title="Sampling & Estimation">
+            <div class="section-placeholder">
+                <h2>Sampling & Estimation</h2>
+                <p class="placeholder-text">Content will include: Simple random sampling, stratified sampling, Central Limit Theorem, point estimation, and properties of estimators.</p>
+                <div class="placeholder-visual">[ CLT simulation placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 5: Confidence Intervals -->
+        <section class="content-section" id="section-ci-theory" data-title="CI Theory">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 5 · Theory</span>
+                <h2>Understanding Confidence Intervals</h2>
+                <p class="section-subtitle">A frequentist approach to parameter estimation</p>
+            </header>
+        
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>What is a Confidence Interval?</h3>
+                        <p>A <strong>confidence interval (CI)</strong> is a range of values, derived from sample data, that is likely to contain the true value of an unknown population parameter. Unlike a point estimate (which returns a single number), a CI quantifies the <em>uncertainty</em> inherent in sampling.</p>
+                    
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">📏</div>
+                            <div class="definition-content">
+                                <h4>Formal Definition</h4>
+                                <p>A <span class="katex-inline">\(100(1 - \alpha)\%\)</span> confidence interval for a parameter <span class="katex-inline">\(\theta\)</span> is an interval <span class="katex-inline">\((L,\, U)\)</span> computed from sample data such that, <em>before sampling</em>:</p>
+                                <div class="katex-block">P(L \leq \theta \leq U) \;=\; 1 - \alpha</div>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="theory-block">
+                        <h3>Common CI Formulas</h3>
+                    
+                        <div class="formula-card">
+                            <h4>1. CI for Population Mean (σ known)</h4>
+                            <div class="katex-block">\bar{x} \;\pm\; z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}</div>
+                            <p class="formula-explain">Where <span class="katex-inline">\(\bar{x}\)</span> is the sample mean, <span class="katex-inline">\(z_{\alpha/2}\)</span> is the standard normal critical value, <span class="katex-inline">\(\sigma\)</span> is the population standard deviation, and <span class="katex-inline">\(n\)</span> is sample size.</p>
+                        </div>
+                    
+                        <div class="formula-card">
+                            <h4>2. CI for Population Mean (σ unknown)</h4>
+                            <div class="katex-block">\bar{x} \;\pm\; t_{\alpha/2,\, n-1} \cdot \frac{s}{\sqrt{n}}</div>
+                            <p class="formula-explain">Uses the Student's <span class="katex-inline">\(t\)</span>-distribution with <span class="katex-inline">\(n - 1\)</span> degrees of freedom and the sample standard deviation <span class="katex-inline">\(s\)</span>.</p>
+                        </div>
+                    
+                        <div class="formula-card">
+                            <h4>3. CI for Population Proportion</h4>
+                            <div class="katex-block">\hat{p} \;\pm\; z_{\alpha/2} \cdot \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}</div>
+                            <p class="formula-explain">Requires <span class="katex-inline">\(n\hat{p} \geq 10\)</span> and <span class="katex-inline">\(n(1 - \hat{p}) \geq 10\)</span> for the normal approximation to hold.</p>
+                        </div>
+                    </article>
+                
+                    <article class="theory-block">
+                        <h3>Interpreting "Confidence"</h3>
+                        <p>The confidence level describes the <strong>long-run performance</strong> of the procedure. A 95% CI method, applied repeatedly across infinite samples, will capture the true parameter 95% of the time. It is the <em>method</em>, not the specific interval, that has a probability attached.</p>
+                    </article>
+                </div>
+            
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="misconception-warning">
+                        <div class="warning-header">
+                            <span class="warning-icon">⚠️</span>
+                            <h3>Misconception Warning</h3>
+                        </div>
+                        <div class="warning-content">
+                            <h4 class="wrong-title">❌ Wrong Interpretation</h4>
+                            <p class="wrong-text">"There is a 95% probability that the true mean lies within this specific interval."</p>
+                        
+                            <h4 class="right-title">✅ Correct Interpretation</h4>
+                            <p class="right-text">"If we repeated this sampling process infinitely, 95% of the intervals we compute would contain the true mean."</p>
+                        
+                            <div class="warning-explanation">
+                                <p>In frequentist statistics, the true parameter is a <strong>fixed, unknown constant</strong> — not a random variable. The interval is what varies from sample to sample.</p>
+                                <p>Once an interval is calculated, it either contains the parameter or it doesn't (probability is exactly 0 or 1). The "95%" refers to the <em>long-run success rate of the procedure</em>, not any single interval.</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="info-card">
+                        <h4>🔑 Factors Affecting Width</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-red">↗</span> Higher confidence → <strong>Wider</strong> interval</li>
+                            <li><span class="factor-symbol text-green">↘</span> Larger sample size → <strong>Narrower</strong> interval</li>
+                            <li><span class="factor-symbol text-red">↗</span> Greater variability (σ) → <strong>Wider</strong> interval</li>
+                        </ul>
+                    </div>
+                
+                    <div class="info-card">
+                        <h4>📝 Common Confidence Levels</h4>
+                        <table class="z-table">
+                            <thead>
+                                <tr><th>Level</th><th><span class="katex-inline">\(\alpha\)</span></th><th><span class="katex-inline">\(z_{\alpha/2}\)</span></th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>90%</td><td>0.10</td><td>1.645</td></tr>
+                                <tr><td>95%</td><td>0.05</td><td>1.960</td></tr>
+                                <tr><td>99%</td><td>0.01</td><td>2.576</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </aside>
+            </div>
+        
+            <div class="section-cta">
+                <p>Ready to see these concepts in action?</p>
+                <button class="btn btn-primary cta-btn" data-navigate="ci-simulator">
+                    Launch Interactive Simulator 🚀
+                </button>
+            </div>
+        </section>
+
+        <section class="content-section" id="section-ci-simulator" data-title="CI Simulator">
+            <header class="section-header">
+                <span class="section-badge badge-green">Module 5 · Simulation</span>
+                <h2>Interactive Confidence Interval Simulator</h2>
+                <p class="section-subtitle">Visualize 100 confidence intervals computed from independent samples</p>
+            </header>
+        
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Simulation Parameters</h3>
+                    
+                        <div class="slider-control">
+                            <label for="confidenceLevel">
+                                Confidence Level
+                                <output class="slider-value" id="confidenceValue" for="confidenceLevel">95%</output>
+                            </label>
+                            <input type="range" id="confidenceLevel" min="80" max="99" value="95" step="1"
+                                   aria-describedby="confidenceDesc">
+                            <div class="slider-ticks" id="confidenceDesc">
+                                <span>80%</span><span>99%</span>
+                            </div>
+                        </div>
+                    
+                        <div class="slider-control">
+                            <label for="sampleSize">
+                                Sample Size <span class="katex-inline">\(n\)</span>
+                                <output class="slider-value" id="sampleSizeValue" for="sampleSize">30</output>
+                            </label>
+                            <input type="range" id="sampleSize" min="10" max="1000" value="30" step="10"
+                                   aria-describedby="sampleSizeDesc">
+                            <div class="slider-ticks" id="sampleSizeDesc">
+                                <span>10</span><span>1000</span>
+                            </div>
+                        </div>
+                    
+                        <div class="slider-control">
+                            <label for="populationSD">
+                                Population <span class="katex-inline">\(\sigma\)</span>
+                                <output class="slider-value" id="populationSDValue" for="populationSD">10</output>
+                            </label>
+                            <input type="range" id="populationSD" min="1" max="50" value="10" step="1"
+                                   aria-describedby="populationSDDesc">
+                            <div class="slider-ticks" id="populationSDDesc">
+                                <span>1</span><span>50</span>
+                            </div>
+                        </div>
+                    
+                        <div class="control-fixed">
+                            <p><strong>True μ:</strong> <span class="text-blue font-bold">50</span></p>
+                            <p class="control-note">Samples drawn from <span class="katex-inline">\(\mathcal{N}(\mu\!=\!50,\,\sigma)\)</span></p>
+                        </div>
+                    </div>
+                
+                    <div class="control-group">
+                        <h3>🎮 Controls</h3>
+                        <div class="button-group">
+                            <button id="playPauseBtn" class="btn btn-success sim-btn" aria-label="Play simulation">
+                                <span class="btn-icon">▶</span><span class="btn-label">Play</span>
+                            </button>
+                            <button id="stepBtn" class="btn btn-primary sim-btn" aria-label="Generate one batch">
+                                <span class="btn-icon">↻</span><span class="btn-label">Step</span>
+                            </button>
+                            <button id="resetBtn" class="btn btn-outline sim-btn" aria-label="Reset simulation">
+                                <span class="btn-icon">⟲</span><span class="btn-label">Reset</span>
+                            </button>
+                        </div>
+                        <p class="control-note">Auto-play generates a new batch every 1.5 seconds</p>
+                    </div>
+                
+                    <div class="stats-panel">
+                        <h3>📊 Live Statistics</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Current Batch</div>
+                                <div class="stat-value" id="currentCoverage">—</div>
+                                <div class="stat-subtitle">capturing μ</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Batches</div>
+                                <div class="stat-value" id="totalBatches">0</div>
+                                <div class="stat-subtitle">generated</div>
+                            </div>
+                        </div>
+                        <div class="stat-highlight">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-highlight-content">
+                                <div class="stat-big-number" id="successRate">—</div>
+                                <div class="stat-label">Overall Capture Rate</div>
+                            </div>
+                        </div>
+                        <div class="expected-note">
+                            Expected (matches confidence level): <strong id="expectedCoverage">95%</strong>
+                        </div>
+                    </div>
+                </aside>
+            
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3>100 Confidence Intervals (Current Batch)</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-dot legend-dot-success"></span>Contains μ</span>
+                            <span class="legend-item"><span class="legend-dot legend-dot-fail"></span>Misses μ</span>
+                            <span class="legend-item"><span class="legend-line"></span>True μ = 50</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="ciChart" aria-label="Confidence interval visualization" role="img"></canvas>
+                    </div>
+                    <div class="viz-footer">
+                        <p>Each horizontal segment is a <span id="vizConfLevel">95%</span> CI from a sample of size <span id="vizSampleSize">30</span>. Green intervals contain the true mean μ = 50; red intervals do not.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Hypothesis Testing -->
+        <section class="content-section" id="section-hypothesis" data-title="Hypothesis Testing">
+            <div class="section-placeholder">
+                <h2>Hypothesis Testing</h2>
+                <p class="placeholder-text">Content will include: Null and alternative hypotheses, test statistics, p-values, significance levels, one-tailed vs two-tailed tests.</p>
+                <div class="placeholder-visual">[ Hypothesis test flowchart placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 7: Type I & Type II Errors -->
+        <section class="content-section" id="section-errors" data-title="Type I & Type II Errors">
+            <div class="section-placeholder">
+                <h2>Type I & Type II Errors</h2>
+                <p class="placeholder-text">Content will include: Decision matrix, alpha and beta, power of a test, trade-offs between error types, and real-world implications.</p>
+                <div class="placeholder-visual">[ Error matrix table placeholder ]</div>
+            </div>
+        </section>
+
+        <!-- Section 8: Regression & Correlation -->
+        <section class="content-section" id="section-regression" data-title="Regression & Correlation">
+            <div class="section-placeholder">
+                <h2>Regression & Correlation</h2>
+                <p class="placeholder-text">Content will include: Pearson correlation, Spearman rank correlation, simple linear regression, least squares method, R², and interpretation.</p>
+                <div class="placeholder-visual">[ Scatter plot with regression line placeholder ]</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="footer" role="contentinfo">
+        <p>&copy; 2026 StatLearn Platform. Built with 💙 for Statistics Education.</p>
+    </footer>
+
+    <!-- Application JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
