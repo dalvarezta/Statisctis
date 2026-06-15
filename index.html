@@ -379,19 +379,347 @@
 
         <!-- Section 6: Hypothesis Testing -->
         <section class="content-section" id="section-hypothesis" data-title="Hypothesis Testing">
-            <div class="section-placeholder">
-                <h2>Hypothesis Testing</h2>
-                <p class="placeholder-text">Content will include: Null and alternative hypotheses, test statistics, p-values, significance levels, one-tailed vs two-tailed tests.</p>
-                <div class="placeholder-visual">[ Hypothesis test flowchart placeholder ]</div>
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 6 · Theory</span>
+                <h2>Introduction to Hypothesis Testing</h2>
+                <p class="section-subtitle">A systematic approach to making decisions using sample data</p>
+            </header>
+
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>What is Hypothesis Testing?</h3>
+                        <p><strong>Hypothesis testing</strong> is a statistical method used to make decisions about population parameters based on sample data. It provides a structured framework for evaluating claims or assumptions about a population.</p>
+                        
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">🎯</div>
+                            <div class="definition-content">
+                                <h4>The Core Idea</h4>
+                                <p>We start with an assumption (the null hypothesis), collect data, and determine whether the data provides sufficient evidence to reject that assumption in favor of an alternative explanation.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>The Null and Alternative Hypotheses</h3>
+                        
+                        <div class="hypothesis-comparison">
+                            <div class="hypothesis-card null-hypothesis">
+                                <div class="hypothesis-header">
+                                    <span class="hypothesis-symbol">$H_0$</span>
+                                    <span class="hypothesis-label">Null Hypothesis</span>
+                                </div>
+                                <ul class="hypothesis-features">
+                                    <li>Represents the <strong>status quo</strong> or <strong>no effect</strong></li>
+                                    <li>Always contains an equality (=, ≤, ≥)</li>
+                                    <li>Assumed true until evidence suggests otherwise</li>
+                                    <li>What we test <em>against</em></li>
+                                </ul>
+                                <div class="hypothesis-example">
+                                    <strong>Example:</strong> $H_0: \mu = 100$ (The population mean equals 100)
+                                </div>
+                            </div>
+
+                            <div class="hypothesis-card alternative-hypothesis">
+                                <div class="hypothesis-header">
+                                    <span class="hypothesis-symbol">$H_1$ or $H_a$</span>
+                                    <span class="hypothesis-label">Alternative Hypothesis</span>
+                                </div>
+                                <ul class="hypothesis-features">
+                                    <li>Represents the <strong>research claim</strong> or <strong>effect exists</strong></li>
+                                    <li>Contains inequality (≠, &lt;, &gt;)</li>
+                                    <li>What we conclude if we reject $H_0$</li>
+                                    <li>Requires sufficient evidence to support</li>
+                                </ul>
+                                <div class="hypothesis-example">
+                                    <strong>Example:</strong> $H_1: \mu \neq 100$ (The population mean differs from 100)
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Significance Level ($\alpha$)</h3>
+                        <p>The <strong>significance level</strong>, denoted by $\alpha$ (alpha), is the probability threshold for rejecting the null hypothesis. It represents the risk we're willing to take of making a Type I error.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Common Significance Levels</h4>
+                            <table class="z-table">
+                                <thead>
+                                    <tr><th>$\alpha$</th><th>Confidence Level</th><th>Interpretation</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>0.10</td><td>90%</td><td>Less stringent; more likely to reject $H_0$</td></tr>
+                                    <tr><td>0.05</td><td>95%</td><td>Most commonly used standard</td></tr>
+                                    <tr><td>0.01</td><td>99%</td><td>Very stringent; strong evidence required</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <p class="mt-4"><strong>Decision Rule:</strong> If the p-value &lt; $\alpha$, reject $H_0$. Otherwise, fail to reject $H_0$.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>The P-Value</h3>
+                        <p>The <strong>p-value</strong> is the probability of obtaining test results at least as extreme as the observed results, assuming the null hypothesis is true.</p>
+                        
+                        <div class="definition-card bg-green border-green">
+                            <div class="definition-icon">📊</div>
+                            <div class="definition-content">
+                                <h4>Understanding the P-Value</h4>
+                                <ul>
+                                    <li><strong>Small p-value (&lt; $\alpha$):</strong> The observed data is unlikely under $H_0$ → Reject $H_0$</li>
+                                    <li><strong>Large p-value (≥ $\alpha$):</strong> The observed data is consistent with $H_0$ → Fail to reject $H_0$</li>
+                                </ul>
+                                <p class="mt-4"><em>Remember: The p-value is NOT the probability that $H_0$ is true!</em></p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="info-card">
+                        <h4>⚖️ Types of Tests</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-blue">↔</span> <strong>Two-tailed:</strong> $H_1: \mu \neq \mu_0$ (tests for any difference)</li>
+                            <li><span class="factor-symbol text-red">←</span> <strong>Left-tailed:</strong> $H_1: \mu &lt; \mu_0$ (tests if smaller)</li>
+                            <li><span class="factor-symbol text-green">→</span> <strong>Right-tailed:</strong> $H_1: \mu &gt; \mu_0$ (tests if larger)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>📋 Z-Test vs T-Test</h4>
+                        <table class="z-table">
+                            <thead>
+                                <tr><th>Test</th><th>When to Use</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Z-test</strong></td><td>σ known OR n ≥ 30</td></tr>
+                                <tr><td><strong>T-test</strong></td><td>σ unknown AND n &lt; 30</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="misconception-warning">
+                        <div class="warning-header">
+                            <span class="warning-icon">⚠️</span>
+                            <h3>Important Note</h3>
+                        </div>
+                        <div class="warning-content">
+                            <h4 class="wrong-title">❌ "Accept $H_0$"</h4>
+                            <p class="wrong-text">We never "accept" the null hypothesis.</p>
+                        
+                            <h4 class="right-title">✅ "Fail to Reject $H_0$"</h4>
+                            <p class="right-text">We either reject $H_0$ or fail to reject it. Failing to reject doesn't prove $H_0$ is true—it means we lack sufficient evidence against it.</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Step-by-Step Workflow -->
+            <article class="theory-block full-width">
+                <h3>📝 Step-by-Step Hypothesis Testing Workflow</h3>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>State the Hypotheses</h4>
+                            <p>Clearly define $H_0$ and $H_1$ based on the research question. Determine if the test is one-tailed or two-tailed.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Choose Significance Level ($\alpha$)</h4>
+                            <p>Select $\alpha$ (typically 0.05) before collecting data. This sets your threshold for statistical significance.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Collect Sample Data</h4>
+                            <p>Gather a representative sample and calculate relevant statistics (sample mean $\bar{x}$, sample standard deviation $s$, sample size $n$).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Calculate the Test Statistic</h4>
+                            <div class="katex-block">\text{Z-test: } z = \frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}} \quad \text{or} \quad \text{T-test: } t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Determine the P-Value or Critical Value</h4>
+                            <p>Find the probability of observing a test statistic as extreme as yours (p-value), or compare against the critical value from the distribution table.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Make a Decision</h4>
+                            <p>If p-value &lt; $\alpha$ (or test statistic falls in rejection region), <strong>reject $H_0$</strong>. Otherwise, <strong>fail to reject $H_0$</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>State the Conclusion</h4>
+                            <p>Interpret your decision in the context of the original research question using non-technical language.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <div class="section-cta">
+                <p>Ready to practice hypothesis testing interactively?</p>
+                <button class="btn btn-primary cta-btn" data-navigate="errors">
+                    Launch Interactive Simulator 🚀
+                </button>
             </div>
         </section>
 
-        <!-- Section 7: Type I & Type II Errors -->
-        <section class="content-section" id="section-errors" data-title="Type I & Type II Errors">
-            <div class="section-placeholder">
-                <h2>Type I & Type II Errors</h2>
-                <p class="placeholder-text">Content will include: Decision matrix, alpha and beta, power of a test, trade-offs between error types, and real-world implications.</p>
-                <div class="placeholder-visual">[ Error matrix table placeholder ]</div>
+        <!-- Section 7: Type I & Type II Errors (Interactive Hypothesis Testing Simulator) -->
+        <section class="content-section" id="section-errors" data-title="Hypothesis Testing Simulator">
+            <header class="section-header">
+                <span class="section-badge badge-green">Module 7 · Simulation</span>
+                <h2>Interactive Hypothesis Testing Simulator</h2>
+                <p class="section-subtitle">Visualize test statistics, rejection regions, and decision outcomes</p>
+            </header>
+
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Test Configuration</h3>
+
+                        <div class="control-fixed">
+                            <label for="testType">Test Type</label>
+                            <select id="testType" class="form-select">
+                                <option value="two-tailed">Two-tailed Test (≠)</option>
+                                <option value="left-tailed">Left-tailed Test (&lt;)</option>
+                                <option value="right-tailed">Right-tailed Test (&gt;)</option>
+                                <optgroup label="Distribution Type">
+                                    <option value="z-test">Z-Test (σ known)</option>
+                                    <option value="t-test">T-Test (σ unknown)</option>
+                                </optgroup>
+                            </select>
+                            <p class="control-note" id="testTypeDesc">Tests if the sample mean differs from the hypothesized mean</p>
+                        </div>
+
+                        <div class="slider-control">
+                            <label for="alphaLevel">
+                                Significance Level ($\alpha$)
+                                <output class="slider-value" id="alphaValue" for="alphaLevel">0.05</output>
+                            </label>
+                            <input type="range" id="alphaLevel" min="0.01" max="0.20" value="0.05" step="0.01"
+                                   aria-describedby="alphaDesc">
+                            <div class="slider-ticks" id="alphaDesc">
+                                <span>0.01</span><span>0.20</span>
+                            </div>
+                        </div>
+
+                        <div class="slider-control">
+                            <label for="sampleSizeN">
+                                Sample Size ($n$)
+                                <output class="slider-value" id="sampleSizeNValue" for="sampleSizeN">30</output>
+                            </label>
+                            <input type="range" id="sampleSizeN" min="5" max="100" value="30" step="1"
+                                   aria-describedby="sampleSizeNDesc">
+                            <div class="slider-ticks" id="sampleSizeNDesc">
+                                <span>5</span><span>100</span>
+                            </div>
+                        </div>
+
+                        <div class="slider-control">
+                            <label for="effectSize">
+                                Effect Size (Difference)
+                                <output class="slider-value" id="effectSizeValue" for="effectSize">0.5</output>
+                            </label>
+                            <input type="range" id="effectSize" min="-3" max="3" value="0.5" step="0.1"
+                                   aria-describedby="effectSizeDesc">
+                            <div class="slider-ticks" id="effectSizeDesc">
+                                <span>-3</span><span>3</span>
+                            </div>
+                        </div>
+
+                        <div class="control-fixed">
+                            <p><strong>Hypothesized μ₀:</strong> <span class="text-blue font-bold">0</span></p>
+                            <p><strong>Sample Mean:</strong> <span class="text-green font-bold" id="sampleMeanDisplay">0.5</span></p>
+                            <p class="control-note">Data generated from $\mathcal{N}(\mu_0 + \text{effect}, \sigma=1)$</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>🎮 Controls</h3>
+                        <div class="button-group">
+                            <button id="runTestBtn" class="btn btn-primary sim-btn" aria-label="Run hypothesis test">
+                                <span class="btn-icon">▶</span><span class="btn-label">Run Test</span>
+                            </button>
+                            <button id="animateBtn" class="btn btn-success sim-btn" aria-label="Animate test statistic">
+                                <span class="btn-icon">↻</span><span class="btn-label">Animate</span>
+                            </button>
+                            <button id="resetSimBtn" class="btn btn-outline sim-btn" aria-label="Reset simulation">
+                                <span class="btn-icon">⟲</span><span class="btn-label">Reset</span>
+                            </button>
+                        </div>
+                        <p class="control-note">Click "Run Test" to generate new sample data and compute the test statistic</p>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Test Results</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Test Statistic</div>
+                                <div class="stat-value" id="testStatistic">—</div>
+                                <div class="stat-subtitle" id="statType">z-score</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">P-Value</div>
+                                <div class="stat-value" id="pValue">—</div>
+                                <div class="stat-subtitle">probability</div>
+                            </div>
+                        </div>
+                        <div class="stat-highlight" id="decisionHighlight">
+                            <div class="stat-icon" id="decisionIcon">🎯</div>
+                            <div class="stat-highlight-content">
+                                <div class="stat-big-number" id="decisionText">—</div>
+                                <div class="stat-label" id="decisionInterpretation">Run a test to see results</div>
+                            </div>
+                        </div>
+                        <div class="expected-note">
+                            Critical Value(s): <strong id="criticalValueDisplay">±1.96</strong>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3>Distribution Plot with Rejection Region</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-dot legend-dot-rejection"></span>Rejection Region</span>
+                            <span class="legend-item"><span class="legend-dot legend-dot-nonrejection"></span>Non-Rejection Region</span>
+                            <span class="legend-item"><span class="legend-dot legend-dot-statistic"></span>Test Statistic</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="hypothesisChart" aria-label="Hypothesis testing distribution plot" role="img"></canvas>
+                    </div>
+                    <div class="viz-footer">
+                        <p id="distributionInfo">Standard Normal Distribution (Z). Red shaded area represents the rejection region where $|z| &gt; z_{\alpha/2}$.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
