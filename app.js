@@ -29,6 +29,8 @@ const AppState = {
         'ci-simulator', 
         'hypothesis',
         'errors',
+        'duality',
+        'case-studies',
         'regression'
     ]
 };
@@ -98,6 +100,16 @@ const Router = {
                 CISimulator.destroy();
             }
         }
+        if (sectionId !== 'duality' && this._lastSection === 'duality') {
+            if (typeof DualitySimulator !== 'undefined' && DualitySimulator.ciChart) {
+                DualitySimulator.destroy();
+            }
+        }
+        if (sectionId !== 'case-studies' && this._lastSection === 'case-studies') {
+            if (typeof CaseStudyViz !== 'undefined') {
+                CaseStudyViz.destroy();
+            }
+        }
 
         this.showSection(sectionId);
         this.updateActiveNav(sectionId);
@@ -108,6 +120,21 @@ const Router = {
             requestAnimationFrame(() => {
                 if (typeof CISimulator !== 'undefined' && !CISimulator.chart) {
                     CISimulator.init();
+                }
+            });
+        }
+        if (sectionId === 'duality') {
+            requestAnimationFrame(() => {
+                if (typeof DualitySimulator !== 'undefined' && !DualitySimulator.ciChart) {
+                    DualitySimulator.init();
+                }
+            });
+        }
+        if (sectionId === 'case-studies') {
+            requestAnimationFrame(() => {
+                if (typeof CaseStudyViz !== 'undefined' && !CaseStudyViz.clinicalChart) {
+                    CaseStudyViz.init();
+                    setupCaseStudyTabs();
                 }
             });
         }
@@ -1041,18 +1068,7 @@ const CaseStudyViz = {
     destroy() { if (this.clinicalChart) this.clinicalChart.destroy(); if (this.qualityChart) this.qualityChart.destroy(); if (this.pollingChart) this.pollingChart.destroy(); }
 };
 
-// Router integration
-(function() {
-    const orig = Router.handleSectionChange;
-    Router.handleSectionChange = function(sectionId) {
-        if (orig) orig.call(this, sectionId);
-        setTimeout(() => {
-            if (sectionId === 'duality') DualitySimulator.init();
-            else if (sectionId === 'case-studies') { CaseStudyViz.init(); setupCaseStudyTabs(); }
-            else { if (typeof DualitySimulator !== 'undefined' && DualitySimulator.ciChart) DualitySimulator.destroy(); if (typeof CaseStudyViz !== 'undefined' && CaseStudyViz.clinicalChart) CaseStudyViz.destroy(); }
-        }, 100);
-    };
-})();
+// Router integration (removed - now handled directly in Router.navigate())
 
 function setupCaseStudyTabs() {
     const tabs = document.querySelectorAll('.tab-btn'), contents = document.querySelectorAll('.case-study-content');
