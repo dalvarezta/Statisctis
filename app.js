@@ -110,6 +110,11 @@ const Router = {
                 CaseStudyViz.destroy();
             }
         }
+        if (sectionId !== 'errors' && this._lastSection === 'errors') {
+            if (typeof HypothesisTestSimulator !== 'undefined' && HypothesisTestSimulator.chart) {
+                HypothesisTestSimulator.destroy();
+            }
+        }
 
         this.showSection(sectionId);
         this.updateActiveNav(sectionId);
