@@ -25,6 +25,7 @@ const AppState = {
         'descriptive',
         'probability',
         'sampling',
+        'clt-simulator',
         'ci-theory',  
         'ci-simulator', 
         'hypothesis',
@@ -100,6 +101,11 @@ const Router = {
                 CISimulator.destroy();
             }
         }
+        if (sectionId !== 'clt-simulator' && this._lastSection === 'clt-simulator') {
+            if (typeof CLTSimulator !== 'undefined' && CLTSimulator.populationChart) {
+                CLTSimulator.destroy();
+            }
+        }
         if (sectionId !== 'duality' && this._lastSection === 'duality') {
             if (typeof DualitySimulator !== 'undefined' && DualitySimulator.ciChart) {
                 DualitySimulator.destroy();
@@ -135,6 +141,13 @@ const Router = {
             requestAnimationFrame(() => {
                 if (typeof CISimulator !== 'undefined' && !CISimulator.chart) {
                     CISimulator.init();
+                }
+            });
+        }
+        if (sectionId === 'clt-simulator') {
+            requestAnimationFrame(() => {
+                if (typeof CLTSimulator !== 'undefined' && !CLTSimulator.populationChart) {
+                    CLTSimulator.init();
                 }
             });
         }
@@ -846,6 +859,394 @@ const CISimulator = {
      */
     destroy() {
         this.pause();
+    }
+};
+
+// ============================================
+// CLT SIMULATOR MODULE
+// Interactive Central Limit Theorem simulation
+// ============================================
+const CLTSimulator = {
+    // Chart.js instances
+    populationChart: null,
+    samplingChart: null,
+
+    // State
+    sampleMeans: [],  // Array of computed sample means
+    currentShape: 'uniform',
+    populationSD: 0,  // For theoretical SE calculation
+
+    // DOM references
+    elements: {},
+
+    /**
+     * Initialize the simulator
+     */
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.initCharts();
+        this.updatePopulationChart();
+    },
+
+    /**
+     * Cache DOM references for performance
+     */
+    cacheElements() {
+        this.elements = {
+            populationShape: document.getElementById('populationShape'),
+            sampleSizeN: document.getElementById('sampleSizeN'),
+            sampleSizeNValue: document.getElementById('sampleSizeNValue'),
+            drawSampleBtn: document.getElementById('drawSampleBtn'),
+            resetCLTBtn: document.getElementById('resetCLTBtn'),
+            totalDraws: document.getElementById('totalDraws'),
+            meanOfMeans: document.getElementById('meanOfMeans'),
+            sdOfMeans: document.getElementById('sdOfMeans'),
+            theoreticalSE: document.getElementById('theoreticalSE'),
+            populationCanvas: document.getElementById('populationChart'),
+            samplingCanvas: document.getElementById('samplingChart')
+        };
+    },
+
+    /**
+     * Bind event listeners
+     */
+    bindEvents() {
+        const { populationShape, sampleSizeN, drawSampleBtn, resetCLTBtn } = this.elements;
+
+        // Shape dropdown change
+        populationShape.addEventListener('change', () => {
+            this.currentShape = populationShape.value;
+            this.sampleMeans = [];
+            this.updateStats();
+            this.updatePopulationChart();
+            this.resetSamplingChart();
+        });
+
+        // Sample size slider
+        sampleSizeN.addEventListener('input', () => {
+            this.elements.sampleSizeNValue.textContent = sampleSizeN.value;
+            this.updatePopulationChart();
+            this.updateTheoreticalSE();
+        });
+
+        // Control buttons
+        drawSampleBtn.addEventListener('click', () => this.drawSampleMeans());
+        resetCLTBtn.addEventListener('click', () => this.reset());
+    },
+
+    /**
+     * Get population parameters based on selected shape
+     */
+    getPopulationParams() {
+        switch (this.currentShape) {
+            case 'uniform':
+                return { min: 0, max: 100, mean: 50, sd: 28.87 };  // SD = (max-min)/sqrt(12)
+            case 'exponential':
+                return { rate: 0.05, mean: 20, sd: 20 };  // mean = 1/rate, sd = 1/rate
+            case 'bimodal':
+                return { mean1: 30, mean2: 70, sd: 8, mean: 50, sd: ~20 };  // approx
+            default:
+                return { min: 0, max: 100, mean: 50, sd: 28.87 };
+        }
+    },
+
+    /**
+     * Generate a random value from the selected population distribution
+     */
+    generatePopulationValue() {
+        switch (this.currentShape) {
+            case 'uniform':
+                return Math.random() * 100;
+            case 'exponential':
+                return -Math.log(1 - Math.random()) / 0.05;  // Inverse CDF method
+            case 'bimodal':
+                // Mix of two normals
+                const chooseFirst = Math.random() < 0.5;
+                const mean = chooseFirst ? 30 : 70;
+                return this.normalRandom(mean, 8);
+            default:
+                return Math.random() * 100;
+        }
+    },
+
+    /**
+     * Generate a normally-distributed random value (Box-Muller transform)
+     */
+    normalRandom(mean = 0, sd = 1) {
+        let u1 = Math.random();
+        const u2 = Math.random();
+        while (u1 === 0) u1 = Math.random();
+        const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        return mean + z * sd;
+    },
+
+    /**
+     * Draw one sample of size n and compute its mean
+     */
+    drawOneSampleMean(n) {
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+            sum += this.generatePopulationValue();
+        }
+        return sum / n;
+    },
+
+    /**
+     * Draw 200 sample means and add them to the collection
+     */
+    drawSampleMeans() {
+        const n = parseInt(this.elements.sampleSizeN.value);
+        const numSamples = 200;
+
+        for (let i = 0; i < numSamples; i++) {
+            this.sampleMeans.push(this.drawOneSampleMean(n));
+        }
+
+        this.updateStats();
+        this.updateSamplingChart();
+    },
+
+    /**
+     * Update statistics display
+     */
+    updateStats() {
+        const n = parseInt(this.elements.sampleSizeN.value);
+        const params = this.getPopulationParams();
+        const count = this.sampleMeans.length;
+
+        this.elements.totalDraws.textContent = count.toLocaleString();
+
+        if (count === 0) {
+            this.elements.meanOfMeans.textContent = '—';
+            this.elements.sdOfMeans.textContent = '—';
+            return;
+        }
+
+        // Compute mean of sample means
+        const mean = this.sampleMeans.reduce((a, b) => a + b, 0) / count;
+        this.elements.meanOfMeans.textContent = mean.toFixed(3);
+
+        // Compute SD of sample means
+        const variance = this.sampleMeans.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / count;
+        const sd = Math.sqrt(variance);
+        this.elements.sdOfMeans.textContent = sd.toFixed(3);
+
+        // Update theoretical SE
+        this.updateTheoreticalSE();
+    },
+
+    /**
+     * Update theoretical standard error display
+     */
+    updateTheoreticalSE() {
+        const n = parseInt(this.elements.sampleSizeN.value);
+        const params = this.getPopulationParams();
+        const theoreticalSE = params.sd / Math.sqrt(n);
+        this.elements.theoreticalSE.textContent = `Theoretical SE = σ/√n ≈ ${theoreticalSE.toFixed(3)}`;
+    },
+
+    /**
+     * Initialize both Chart.js charts
+     */
+    initCharts() {
+        this.initPopulationChart();
+        this.initSamplingChart();
+    },
+
+    /**
+     * Initialize the population distribution chart
+     */
+    initPopulationChart() {
+        const ctx = this.elements.populationCanvas.getContext('2d');
+
+        // Generate data points for the population distribution
+        const labels = [];
+        const data = [];
+
+        for (let x = 0; x <= 100; x += 1) {
+            labels.push(x.toFixed(0));
+            data.push(this.getPopulationDensity(x));
+        }
+
+        this.populationChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Population Distribution',
+                    data: data,
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-blue-primary').trim(),
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-blue-light').trim() || 'rgba(33, 150, 243, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 300 },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Value' },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Density' },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    },
+
+    /**
+     * Get probability density at a given x value for the current population shape
+     */
+    getPopulationDensity(x) {
+        switch (this.currentShape) {
+            case 'uniform':
+                return (x >= 0 && x <= 100) ? 0.01 : 0;
+            case 'exponential':
+                return x >= 0 ? 0.05 * Math.exp(-0.05 * x) : 0;
+            case 'bimodal':
+                // Mix of two normal PDFs
+                const norm1 = (1 / (8 * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - 30) / 8, 2));
+                const norm2 = (1 / (8 * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - 70) / 8, 2));
+                return 0.5 * norm1 + 0.5 * norm2;
+            default:
+                return 0;
+        }
+    },
+
+    /**
+     * Update the population chart when shape changes
+     */
+    updatePopulationChart() {
+        if (!this.populationChart) return;
+
+        const labels = [];
+        const data = [];
+
+        for (let x = 0; x <= 100; x += 1) {
+            labels.push(x.toFixed(0));
+            data.push(this.getPopulationDensity(x));
+        }
+
+        // Normalize for visualization
+        const maxDensity = Math.max(...data);
+        const normalizedData = data.map(d => d / maxDensity * 100);
+
+        this.populationChart.data.labels = labels;
+        this.populationChart.data.datasets[0].data = normalizedData;
+        this.populationChart.update('none');
+    },
+
+    /**
+     * Initialize the sampling distribution histogram chart
+     */
+    initSamplingChart() {
+        const ctx = this.elements.samplingCanvas.getContext('2d');
+
+        this.samplingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Sample Means',
+                    data: [],
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-green-primary').trim(),
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-green-dark').trim(),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 200 },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Sample Mean Value' },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Frequency' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    },
+
+    /**
+     * Reset the sampling chart data
+     */
+    resetSamplingChart() {
+        if (!this.samplingChart) return;
+        this.samplingChart.data.labels = [];
+        this.samplingChart.data.datasets[0].data = [];
+        this.samplingChart.update('none');
+    },
+
+    /**
+     * Update the sampling distribution histogram
+     */
+    updateSamplingChart() {
+        if (!this.samplingChart || this.sampleMeans.length === 0) return;
+
+        // Create histogram bins
+        const numBins = 30;
+        const min = Math.min(...this.sampleMeans);
+        const max = Math.max(...this.sampleMeans);
+        const binWidth = (max - min) / numBins;
+
+        const binCounts = new Array(numBins).fill(0);
+        const binLabels = [];
+
+        for (let i = 0; i < numBins; i++) {
+            binLabels.push((min + i * binWidth).toFixed(1));
+        }
+
+        this.sampleMeans.forEach(value => {
+            const binIndex = Math.min(Math.floor((value - min) / binWidth), numBins - 1);
+            binCounts[binIndex]++;
+        });
+
+        this.samplingChart.data.labels = binLabels;
+        this.samplingChart.data.datasets[0].data = binCounts;
+        this.samplingChart.update('active');
+    },
+
+    /**
+     * Reset the simulation
+     */
+    reset() {
+        this.sampleMeans = [];
+        this.updateStats();
+        this.resetSamplingChart();
+    },
+
+    /**
+     * Clean up when leaving section
+     */
+    destroy() {
+        if (this.populationChart) {
+            this.populationChart.destroy();
+            this.populationChart = null;
+        }
+        if (this.samplingChart) {
+            this.samplingChart.destroy();
+            this.samplingChart = null;
+        }
     }
 };
 
