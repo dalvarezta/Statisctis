@@ -367,10 +367,231 @@
 
         <!-- Section 2: Descriptive Statistics -->
         <section class="content-section" id="section-descriptive" data-title="Descriptive Statistics">
-            <div class="section-placeholder">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 2 · Theory & Simulation</span>
                 <h2>Descriptive Statistics</h2>
-                <p class="placeholder-text">Content will include: Measures of central tendency (mean, median, mode), measures of dispersion (variance, standard deviation, range), and skewness.</p>
-                <div class="placeholder-visual">[ Chart.js histogram placeholder ]</div>
+                <p class="section-subtitle">Summarizing and describing the main features of a dataset</p>
+            </header>
+
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>Measures of Central Tendency</h3>
+                        <p>Central tendency measures identify the "center" or typical value of a dataset. The three primary measures are the mean, median, and mode—each with distinct properties and appropriate use cases.</p>
+
+                        <div class="formula-card">
+                            <h4>Mean (Arithmetic Average)</h4>
+                            <div class="katex-block">$$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i = \frac{x_1 + x_2 + \cdots + x_n}{n}$$</div>
+                            <p class="formula-explain">The sum of all observations divided by the sample size. Best used for symmetric distributions without extreme outliers.</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Median (Middle Value)</h4>
+                            <p class="formula-explain">The value separating the higher half from the lower half of the data. For ordered data:</p>
+                            <div class="katex-block">$$\text{Median} = \begin{cases} x_{(n+1)/2} & \text{if } n \text{ is odd} \\ \frac{x_{n/2} + x_{n/2+1}}{2} & \text{if } n \text{ is even} \end{cases}$$</div>
+                            <p class="formula-explain"><strong>Preferred for skewed distributions</strong> because it is resistant to outliers.</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Mode (Most Frequent Value)</h4>
+                            <p class="formula-explain">The value that appears most frequently in the dataset. A distribution can be unimodal (one mode), bimodal (two modes), or multimodal. For continuous data, the mode may not exist or may be estimated from a histogram peak.</p>
+                        </div>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">📊</div>
+                            <div class="definition-content">
+                                <h4>When to Use Each Measure</h4>
+                                <ul>
+                                    <li><strong>Mean:</strong> Symmetric, bell-shaped distributions (e.g., heights, test scores)</li>
+                                    <li><strong>Median:</strong> Skewed distributions or data with outliers (e.g., income, house prices)</li>
+                                    <li><strong>Mode:</strong> Categorical data or identifying peaks in distributions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Measures of Dispersion</h3>
+                        <p>Dispersion measures quantify the spread or variability in a dataset. Understanding spread is crucial because two datasets can have identical means but very different distributions.</p>
+
+                        <div class="formula-card">
+                            <h4>Range</h4>
+                            <div class="katex-block">$$\text{Range} = x_{\max} - x_{\min}$$</div>
+                            <p class="formula-explain">The simplest measure of spread. Highly sensitive to outliers.</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Variance (Population)</h4>
+                            <div class="katex-block">$$\sigma^2 = \frac{1}{N}\sum_{i=1}^{N} (x_i - \mu)^2$$</div>
+                            <p class="formula-explain">Average squared deviation from the population mean. Uses <span class="katex-inline">\(N\)</span> (population size).</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Variance (Sample)</h4>
+                            <div class="katex-block">$$s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2$$</div>
+                            <p class="formula-explain">Uses <span class="katex-inline">\(n-1\)</span> (Bessel's correction) to provide an unbiased estimate of the population variance. The <span class="katex-inline">\(n-1\)</span> accounts for the fact that we estimate <span class="katex-inline">\(\mu\)</span> with <span class="katex-inline">\(\bar{x}\)</span>.</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Standard Deviation</h4>
+                            <div class="katex-block">$$\sigma = \sqrt{\sigma^2} \quad \text{(population)} \qquad s = \sqrt{s^2} \quad \text{(sample)}$$</div>
+                            <p class="formula-explain">The square root of variance. Expressed in the same units as the original data, making it more interpretable than variance.</p>
+                        </div>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Skewness</h3>
+                        <p>Skewness measures the asymmetry of a distribution. It indicates whether values are concentrated more on one side of the mean than the other.</p>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">⚖️</div>
+                            <div class="definition-content">
+                                <h4>Interpreting Skewness</h4>
+                                <ul>
+                                    <li><strong>Positive skew (right-skewed):</strong> Tail extends to the right; Mean > Median > Mode</li>
+                                    <li><strong>Negative skew (left-skewed):</strong> Tail extends to the left; Mean < Median < Mode</li>
+                                    <li><strong>Zero skew (symmetric):</strong> Mean ≈ Median ≈ Mode</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="formula-card">
+                            <h4>Sample Skewness Coefficient</h4>
+                            <div class="katex-block">$$g_1 = \frac{n}{(n-1)(n-2)} \sum_{i=1}^{n} \left(\frac{x_i - \bar{x}}{s}\right)^3$$</div>
+                            <p class="formula-explain">A standardized third moment. Values between -0.5 and 0.5 suggest approximate symmetry; values beyond ±1 indicate strong skewness.</p>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="info-card">
+                        <h4>🔑 Key Relationships</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-blue">⟷</span> In symmetric distributions: Mean = Median</li>
+                            <li><span class="factor-symbol text-red">↗</span> Right skew pulls mean above median</li>
+                            <li><span class="factor-symbol text-green">↘</span> Left skew pulls mean below median</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>📝 Why n-1?</h4>
+                        <p style="font-size: var(--font-size-sm);">Using <span class="katex-inline">\(n-1\)</span> instead of <span class="katex-inline">\(n\)</span> corrects for the bias introduced when estimating the population variance from a sample. Without this correction, sample variance would systematically underestimate the true population variance.</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>💡 Practical Tip</h4>
+                        <p style="font-size: var(--font-size-sm);">Always report both central tendency AND dispersion together. Saying "the average is 50" is incomplete without knowing if values range from 49–51 or from 0–100.</p>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Interactive Simulator -->
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Distribution Settings</h3>
+                    
+                        <div class="select-control">
+                            <label for="distributionShape">Distribution Shape</label>
+                            <select id="distributionShape" aria-describedby="shapeDesc">
+                                <option value="normal">Normal (Symmetric)</option>
+                                <option value="right-skewed">Right-Skewed</option>
+                                <option value="left-skewed">Left-Skewed</option>
+                                <option value="bimodal">Bimodal</option>
+                                <option value="uniform">Uniform</option>
+                            </select>
+                            <p class="control-note" id="shapeDesc">Select the underlying distribution shape</p>
+                        </div>
+                    
+                        <div class="slider-control">
+                            <label for="sampleSizeDescStats">
+                                Sample Size <span class="katex-inline">\(n\)</span>
+                                <output class="slider-value" id="sampleSizeValueDesc" for="sampleSizeDescStats">100</output>
+                            </label>
+                            <input type="range" id="sampleSizeDescStats" min="20" max="500" value="100" step="10"
+                                   aria-describedby="sampleSizeDescStatsDesc">
+                            <div class="slider-ticks" id="sampleSizeDescStatsDesc">
+                                <span>20</span><span>500</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="control-group">
+                        <h3>🎮 Controls</h3>
+                        <div class="button-group">
+                            <button id="generateBtn" class="btn btn-primary" aria-label="Generate new sample">
+                                <span class="btn-icon">⟳</span><span class="btn-label">Generate New Sample</span>
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="stats-panel">
+                        <h3>📊 Live Statistics</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Mean</div>
+                                <div class="stat-value" id="statMean">—</div>
+                                <div class="stat-subtitle">average</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Median</div>
+                                <div class="stat-value" id="statMedian">—</div>
+                                <div class="stat-subtitle">middle value</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Mode</div>
+                                <div class="stat-value" id="statMode">—</div>
+                                <div class="stat-subtitle">most frequent</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Range</div>
+                                <div class="stat-value" id="statRange">—</div>
+                                <div class="stat-subtitle">max − min</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Variance</div>
+                                <div class="stat-value" id="statVariance">—</div>
+                                <div class="stat-subtitle">s² (sample)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Std Dev</div>
+                                <div class="stat-value" id="statStdDev">—</div>
+                                <div class="stat-subtitle">s</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Skewness</div>
+                                <div class="stat-value" id="statSkewness">—</div>
+                                <div class="stat-subtitle">g₁ coefficient</div>
+                            </div>
+                        </div>
+                        <div class="stat-highlight">
+                            <div class="stat-icon">💡</div>
+                            <div class="stat-highlight-content">
+                                <div class="stat-big-number" id="skewInterpretation">Generate a sample to see interpretation</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3>Histogram with Mean & Median Reference Lines</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-line" style="background-color: #dc2626;"></span>Mean</span>
+                            <span class="legend-item"><span class="legend-line" style="background-color: #16a34a;"></span>Median</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="descriptiveChart" aria-label="Histogram visualization of descriptive statistics" role="img"></canvas>
+                    </div>
+                    <div class="viz-footer">
+                        <p>The histogram shows the frequency distribution of <span id="vizSampleSizeDesc">100</span> values. Red line marks the mean; green line marks the median. Compare their positions to assess skewness.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
