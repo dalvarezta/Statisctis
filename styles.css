@@ -487,14 +487,19 @@ code {
 .text-blue { color: var(--color-blue-primary); }
 .text-red { color: var(--color-red-primary); }
 .text-green { color: var(--color-green-primary); }
+.text-purple { color: #9c27b0; }
 
 .bg-blue { background-color: var(--color-blue-light); }
 .bg-red { background-color: var(--color-red-light); }
 .bg-green { background-color: var(--color-green-light); }
+.bg-purple { background-color: #f3e5f5; }
+.bg-orange { background-color: #fff3e0; }
 
 .border-blue { border-color: var(--color-blue-primary); }
 .border-red { border-color: var(--color-red-primary); }
 .border-green { border-color: var(--color-green-primary); }
+.border-purple { border-color: #9c27b0; }
+.border-orange { border-color: #ff9800; }
 
 /* Layout Utilities */
 .flex { display: flex; }
@@ -1737,6 +1742,12 @@ code {
     width: 20px;
     height: 3px;
     background-color: var(--color-blue-primary);
+}
+
+.legend-line-solid {
+    width: 20px;
+    height: 3px;
+    background-color: var(--color-green-primary);
 }
 
 .chart-container {

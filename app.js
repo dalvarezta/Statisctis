@@ -120,6 +120,11 @@ const Router = {
                 DescriptiveStatsExplorer.destroy();
             }
         }
+        if (sectionId !== 'probability' && this._lastSection === 'probability') {
+            if (typeof DistributionExplorer !== 'undefined' && DistributionExplorer.chart) {
+                DistributionExplorer.destroy();
+            }
+        }
 
         this.showSection(sectionId);
         this.updateActiveNav(sectionId);
@@ -152,6 +157,13 @@ const Router = {
             requestAnimationFrame(() => {
                 if (typeof DescriptiveStatsExplorer !== 'undefined' && !DescriptiveStatsExplorer.chart) {
                     DescriptiveStatsExplorer.init();
+                }
+            });
+        }
+        if (sectionId === 'probability') {
+            requestAnimationFrame(() => {
+                if (typeof DistributionExplorer !== 'undefined' && !DistributionExplorer.chart) {
+                    DistributionExplorer.init();
                 }
             });
         }
@@ -1289,6 +1301,471 @@ const DescriptiveStatsExplorer = {
 };
 
 // ============================================
+// SECTION 8: DISTRIBUTION EXPLORER MODULE
+// Interactive probability distribution visualizer
+// ============================================
+const DistributionExplorer = {
+    // Chart.js instance
+    chart: null,
+
+    // State
+    currentDist: 'normal',
+    params: {
+        normal: { mu: 0, sigma: 1 },
+        binomial: { n: 10, p: 0.5 },
+        poisson: { lambda: 3 },
+        t: { df: 5 },
+        chisquare: { df: 3 }
+    },
+
+    // DOM references
+    elements: {},
+
+    /**
+     * Initialize the distribution explorer
+     */
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.initChart();
+        this.updateVisualization();
+    },
+
+    /**
+     * Cache DOM references for performance
+     */
+    cacheElements() {
+        this.elements = {
+            distributionSelect: document.getElementById('distributionSelect'),
+            // Normal sliders
+            normalMu: document.getElementById('normalMu'),
+            normalSigma: document.getElementById('normalSigma'),
+            normalMuValue: document.getElementById('normalMuValue'),
+            normalSigmaValue: document.getElementById('normalSigmaValue'),
+            // Binomial sliders
+            binomialN: document.getElementById('binomialN'),
+            binomialP: document.getElementById('binomialP'),
+            binomialNValue: document.getElementById('binomialNValue'),
+            binomialPValue: document.getElementById('binomialPValue'),
+            // Poisson sliders
+            poissonLambda: document.getElementById('poissonLambda'),
+            poissonLambdaValue: document.getElementById('poissonLambdaValue'),
+            // t-distribution sliders
+            tDf: document.getElementById('tDf'),
+            tDfValue: document.getElementById('tDfValue'),
+            // Chi-square sliders
+            chisquareDf: document.getElementById('chisquareDf'),
+            chisquareDfValue: document.getElementById('chisquareDfValue'),
+            // Stats display
+            distMean: document.getElementById('distMean'),
+            distVariance: document.getElementById('distVariance'),
+            distStdDev: document.getElementById('distStdDev'),
+            distType: document.getElementById('distType'),
+            // Viz display
+            vizTitle: document.getElementById('vizTitle'),
+            vizDescription: document.getElementById('vizDescription'),
+            canvas: document.getElementById('distributionChart')
+        };
+    },
+
+    /**
+     * Bind event listeners to controls
+     */
+    bindEvents() {
+        if (!this.elements.distributionSelect) return;
+
+        // Distribution selector
+        this.elements.distributionSelect.addEventListener('change', (e) => {
+            this.currentDist = e.target.value;
+            this.showParamsForDistribution(this.currentDist);
+            this.updateVisualization();
+        });
+
+        // Normal parameter sliders
+        if (this.elements.normalMu) {
+            this.elements.normalMu.addEventListener('input', (e) => {
+                this.params.normal.mu = parseFloat(e.target.value);
+                this.elements.normalMuValue.textContent = this.params.normal.mu;
+                this.updateVisualization();
+            });
+        }
+        if (this.elements.normalSigma) {
+            this.elements.normalSigma.addEventListener('input', (e) => {
+                this.params.normal.sigma = parseFloat(e.target.value);
+                this.elements.normalSigmaValue.textContent = this.params.normal.sigma;
+                this.updateVisualization();
+            });
+        }
+
+        // Binomial parameter sliders
+        if (this.elements.binomialN) {
+            this.elements.binomialN.addEventListener('input', (e) => {
+                this.params.binomial.n = parseInt(e.target.value, 10);
+                this.elements.binomialNValue.textContent = this.params.binomial.n;
+                this.updateVisualization();
+            });
+        }
+        if (this.elements.binomialP) {
+            this.elements.binomialP.addEventListener('input', (e) => {
+                this.params.binomial.p = parseFloat(e.target.value);
+                this.elements.binomialPValue.textContent = this.params.binomial.p;
+                this.updateVisualization();
+            });
+        }
+
+        // Poisson parameter slider
+        if (this.elements.poissonLambda) {
+            this.elements.poissonLambda.addEventListener('input', (e) => {
+                this.params.poisson.lambda = parseFloat(e.target.value);
+                this.elements.poissonLambdaValue.textContent = this.params.poisson.lambda;
+                this.updateVisualization();
+            });
+        }
+
+        // t-distribution parameter slider
+        if (this.elements.tDf) {
+            this.elements.tDf.addEventListener('input', (e) => {
+                this.params.t.df = parseInt(e.target.value, 10);
+                this.elements.tDfValue.textContent = this.params.t.df;
+                this.updateVisualization();
+            });
+        }
+
+        // Chi-square parameter slider
+        if (this.elements.chisquareDf) {
+            this.elements.chisquareDf.addEventListener('input', (e) => {
+                this.params.chisquare.df = parseInt(e.target.value, 10);
+                this.elements.chisquareDfValue.textContent = this.params.chisquare.df;
+                this.updateVisualization();
+            });
+        }
+    },
+
+    /**
+     * Show/hide parameter sliders based on selected distribution
+     */
+    showParamsForDistribution(dist) {
+        const allParams = document.querySelectorAll('.dist-params');
+        allParams.forEach(el => {
+            el.style.display = (el.dataset.dist === dist) ? 'flex' : 'none';
+        });
+    },
+
+    /**
+     * Initialize Chart.js instance
+     */
+    initChart() {
+        const ctx = this.elements.canvas?.getContext('2d');
+        if (!ctx) return;
+
+        this.chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'x' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Probability' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    }
+                }
+            }
+        });
+    },
+
+    /**
+     * Update the visualization based on current distribution and parameters
+     */
+    updateVisualization() {
+        if (!this.chart) return;
+
+        const dist = this.currentDist;
+        let labels, data, mean, variance, title, description;
+
+        switch (dist) {
+            case 'normal':
+                {
+                    const { mu, sigma } = this.params.normal;
+                    mean = mu;
+                    variance = sigma * sigma;
+                    title = 'Normal Distribution';
+                    description = `The bell-shaped curve showing the probability density of the normal distribution with μ=${mu} and σ=${sigma}.`;
+                    
+                    // Generate x values from mu-4*sigma to mu+4*sigma
+                    const xMin = mu - 4 * sigma;
+                    const xMax = mu + 4 * sigma;
+                    labels = [];
+                    data = [];
+                    for (let x = xMin; x <= xMax; x += (xMax - xMin) / 100) {
+                        labels.push(x.toFixed(2));
+                        data.push(this.normalPDF(x, mu, sigma));
+                    }
+                }
+                break;
+
+            case 'binomial':
+                {
+                    const { n, p } = this.params.binomial;
+                    mean = n * p;
+                    variance = n * p * (1 - p);
+                    title = 'Binomial Distribution';
+                    description = `Bar chart showing the probability mass function for ${n} trials with success probability p=${p}.`;
+                    
+                    // Change chart type to bar for discrete distribution
+                    this.chart.config.type = 'bar';
+                    labels = [];
+                    data = [];
+                    for (let k = 0; k <= n; k++) {
+                        labels.push(k.toString());
+                        data.push(this.binomialPMF(k, n, p));
+                    }
+                }
+                break;
+
+            case 'poisson':
+                {
+                    const { lambda } = this.params.poisson;
+                    mean = lambda;
+                    variance = lambda;
+                    title = 'Poisson Distribution';
+                    description = `Bar chart showing the probability mass function for rate λ=${lambda}.`;
+                    
+                    // Change chart type to bar for discrete distribution
+                    this.chart.config.type = 'bar';
+                    labels = [];
+                    data = [];
+                    const maxK = Math.ceil(lambda + 4 * Math.sqrt(lambda));
+                    for (let k = 0; k <= maxK; k++) {
+                        labels.push(k.toString());
+                        data.push(this.poissonPMF(k, lambda));
+                    }
+                }
+                break;
+
+            case 't':
+                {
+                    const { df } = this.params.t;
+                    mean = 0;
+                    variance = df > 2 ? df / (df - 2) : Infinity;
+                    title = "Student's t-Distribution";
+                    description = `The t-distribution with ${df} degrees of freedom, showing heavier tails than the normal distribution.`;
+                    
+                    // Change back to line for continuous distribution
+                    this.chart.config.type = 'line';
+                    labels = [];
+                    data = [];
+                    for (let t = -4; t <= 4; t += 0.08) {
+                        labels.push(t.toFixed(2));
+                        data.push(this.tPDF(t, df));
+                    }
+                }
+                break;
+
+            case 'chisquare':
+                {
+                    const { df } = this.params.chisquare;
+                    mean = df;
+                    variance = 2 * df;
+                    title = 'Chi-Square Distribution';
+                    description = `The chi-square distribution with ${df} degrees of freedom, used in hypothesis testing and goodness-of-fit analysis.`;
+                    
+                    // Change back to line for continuous distribution
+                    this.chart.config.type = 'line';
+                    labels = [];
+                    data = [];
+                    const xMax = df + 4 * Math.sqrt(2 * df) + 5;
+                    for (let x = 0; x <= xMax; x += xMax / 100) {
+                        labels.push(x.toFixed(2));
+                        data.push(this.chisquarePDF(x, df));
+                    }
+                }
+                break;
+        }
+
+        // Update chart data
+        this.chart.data.labels = labels;
+        
+        // Create dataset with mean marker
+        const datasets = [{
+            label: dist === 'binomial' || dist === 'poisson' ? 'PMF' : 'PDF',
+            data: data,
+            borderColor: '#4CAF50',
+            backgroundColor: dist === 'binomial' || dist === 'poisson' 
+                ? 'rgba(76, 175, 80, 0.6)' 
+                : 'rgba(76, 175, 80, 0.1)',
+            fill: dist !== 'binomial' && dist !== 'poisson',
+            tension: 0.4,
+            borderWidth: 2
+        }];
+
+        // Add mean marker for continuous distributions
+        if (dist === 'normal' || dist === 't' || dist === 'chisquare') {
+            // Find the index closest to the mean
+            let meanIndex = 0;
+            let minDiff = Infinity;
+            labels.forEach((label, idx) => {
+                const diff = Math.abs(parseFloat(label) - mean);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    meanIndex = idx;
+                }
+            });
+
+            const meanData = new Array(labels.length).fill(null);
+            meanData[meanIndex] = data[meanIndex];
+
+            datasets.push({
+                label: 'Mean',
+                data: meanData,
+                type: 'scatter',
+                backgroundColor: '#F44336',
+                pointRadius: 8,
+                pointStyle: 'star'
+            });
+        }
+
+        this.chart.data.datasets = datasets;
+
+        // Update axis labels
+        if (dist === 'binomial' || dist === 'poisson') {
+            this.chart.options.scales.x.title.text = 'k (number of successes/events)';
+            this.chart.options.scales.y.title.text = 'P(X = k)';
+        } else if (dist === 'chisquare') {
+            this.chart.options.scales.x.title.text = 'χ² value';
+            this.chart.options.scales.y.title.text = 'Probability Density';
+        } else if (dist === 't') {
+            this.chart.options.scales.x.title.text = 't value';
+            this.chart.options.scales.y.title.text = 'Probability Density';
+        } else {
+            this.chart.options.scales.x.title.text = 'x';
+            this.chart.options.scales.y.title.text = 'Probability Density';
+        }
+
+        this.chart.update('none');
+
+        // Update stats display
+        this.elements.vizTitle.textContent = title;
+        this.elements.vizDescription.textContent = description;
+        this.elements.distMean.textContent = isFinite(mean) ? mean.toFixed(4) : '∞';
+        this.elements.distVariance.textContent = isFinite(variance) ? variance.toFixed(4) : '∞';
+        this.elements.distStdDev.textContent = isFinite(Math.sqrt(variance)) ? Math.sqrt(variance).toFixed(4) : '∞';
+        this.elements.distType.textContent = (dist === 'binomial' || dist === 'poisson') ? 'Discrete' : 'Continuous';
+    },
+
+    /**
+     * Normal distribution PDF
+     */
+    normalPDF(x, mu, sigma) {
+        const coeff = 1 / (sigma * Math.sqrt(2 * Math.PI));
+        const exponent = -Math.pow(x - mu, 2) / (2 * sigma * sigma);
+        return coeff * Math.exp(exponent);
+    },
+
+    /**
+     * Binomial coefficient
+     */
+    binomialCoeff(n, k) {
+        if (k < 0 || k > n) return 0;
+        if (k === 0 || k === n) return 1;
+        let result = 1;
+        for (let i = 0; i < k; i++) {
+            result = result * (n - i) / (i + 1);
+        }
+        return Math.round(result);
+    },
+
+    /**
+     * Binomial distribution PMF
+     */
+    binomialPMF(k, n, p) {
+        return this.binomialCoeff(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+    },
+
+    /**
+     * Factorial helper
+     */
+    factorial(n) {
+        if (n <= 1) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) result *= i;
+        return result;
+    },
+
+    /**
+     * Poisson distribution PMF
+     */
+    poissonPMF(k, lambda) {
+        return (Math.pow(lambda, k) * Math.exp(-lambda)) / this.factorial(k);
+    },
+
+    /**
+     * Gamma function approximation (Lanczos)
+     */
+    gamma(z) {
+        const g = 7;
+        const c = [
+            0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+            771.32342877765313, -176.61502916214059, 12.507343278686905,
+            -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+        ];
+
+        if (z < 0.5) {
+            return Math.PI / (Math.sin(Math.PI * z) * this.gamma(1 - z));
+        }
+
+        z -= 1;
+        let x = c[0];
+        for (let i = 1; i < g + 2; i++) {
+            x += c[i] / (z + i);
+        }
+
+        const t = z + g + 0.5;
+        return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+    },
+
+    /**
+     * Student's t-distribution PDF
+     */
+    tPDF(t, df) {
+        const coeff = this.gamma((df + 1) / 2) / (Math.sqrt(df * Math.PI) * this.gamma(df / 2));
+        return coeff * Math.pow(1 + (t * t) / df, -(df + 1) / 2);
+    },
+
+    /**
+     * Chi-square distribution PDF
+     */
+    chisquarePDF(x, df) {
+        if (x <= 0) return 0;
+        const coeff = 1 / (Math.pow(2, df / 2) * this.gamma(df / 2));
+        return coeff * Math.pow(x, df / 2 - 1) * Math.exp(-x / 2);
+    },
+
+    /**
+     * Destroy chart instance
+     */
+    destroy() {
+        if (this.chart) {
+            this.chart.destroy();
+            this.chart = null;
+        }
+    }
+};
+
+// ============================================
 // EXPORTS (for module systems / testing)
 // ============================================
 if (typeof module !== 'undefined' && module.exports) {
@@ -1298,7 +1775,8 @@ if (typeof module !== 'undefined' && module.exports) {
         Sidebar,
         Theme,
         Progress,
-        DescriptiveStatsExplorer
+        DescriptiveStatsExplorer,
+        DistributionExplorer
     };
 }
 // ============================================

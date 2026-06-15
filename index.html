@@ -597,10 +597,314 @@
 
         <!-- Section 3: Probability Distributions -->
         <section class="content-section" id="section-probability" data-title="Probability Distributions">
-            <div class="section-placeholder">
+            <header class="section-header">
+                <span class="section-badge badge-blue">Module 3 · Theory & Simulation</span>
                 <h2>Probability Distributions</h2>
-                <p class="placeholder-text">Content will include: Normal distribution, binomial distribution, Poisson distribution, t-distribution, and chi-square distribution.</p>
-                <div class="placeholder-visual">[ Interactive normal curve placeholder ]</div>
+                <p class="section-subtitle">Mathematical models describing how random variables behave</p>
+            </header>
+
+            <!-- Theory Section -->
+            <div class="theory-layout">
+                <!-- Main content column -->
+                <div class="theory-main">
+                    <article class="theory-block">
+                        <h3>Normal Distribution</h3>
+                        <p>The <strong>normal distribution</strong> (Gaussian distribution) is the most important continuous probability distribution in statistics. It describes many natural phenomena and forms the foundation for statistical inference.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Probability Density Function (PDF)</h4>
+                            <div class="katex-block">$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</div>
+                            <p class="formula-explain">Where <span class="katex-inline">\(\mu\)</span> is the mean (location) and <span class="katex-inline">\(\sigma\)</span> is the standard deviation (scale).</p>
+                        </div>
+
+                        <div class="definition-card bg-blue border-blue">
+                            <div class="definition-icon">📊</div>
+                            <div class="definition-content">
+                                <h4>Parameters & Properties</h4>
+                                <ul>
+                                    <li><strong>Parameters:</strong> <span class="katex-inline">\(\mu \in \mathbb{R}\)</span> (mean), <span class="katex-inline">\(\sigma > 0\)</span> (standard deviation)</li>
+                                    <li><strong>Mean:</strong> <span class="katex-inline">\(E[X] = \mu\)</span></li>
+                                    <li><strong>Variance:</strong> <span class="katex-inline">\(\text{Var}(X) = \sigma^2\)</span></li>
+                                    <li><strong>Support:</strong> <span class="katex-inline">\(x \in (-\infty, \infty)\)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Use Case:</strong> Heights of adult humans, measurement errors in scientific experiments, IQ scores, and blood pressure readings often follow approximately normal distributions due to the Central Limit Theorem.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Binomial Distribution</h3>
+                        <p>The <strong>binomial distribution</strong> models the number of successes in a fixed number of independent Bernoulli trials, each with the same probability of success.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Probability Mass Function (PMF)</h4>
+                            <div class="katex-block">$$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$$</div>
+                            <p class="formula-explain">Where <span class="katex-inline">\(\binom{n}{k} = \frac{n!}{k!(n-k)!}\)</span> is the binomial coefficient.</p>
+                        </div>
+
+                        <div class="definition-card bg-green border-green">
+                            <div class="definition-icon">🎯</div>
+                            <div class="definition-content">
+                                <h4>Parameters & Properties</h4>
+                                <ul>
+                                    <li><strong>Parameters:</strong> <span class="katex-inline">\(n \in \mathbb{N}\)</span> (number of trials), <span class="katex-inline">\(0 \leq p \leq 1\)</span> (probability of success)</li>
+                                    <li><strong>Mean:</strong> <span class="katex-inline">\(E[X] = np\)</span></li>
+                                    <li><strong>Variance:</strong> <span class="katex-inline">\(\text{Var}(X) = np(1-p)\)</span></li>
+                                    <li><strong>Support:</strong> <span class="katex-inline">\(k \in \{0, 1, 2, \ldots, n\}\)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Use Case:</strong> Number of heads in 10 coin flips, number of defective items in a batch of 100, number of patients responding to treatment out of 50 trial participants.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Poisson Distribution</h3>
+                        <p>The <strong>Poisson distribution</strong> models the number of events occurring in a fixed interval of time or space, given that these events occur independently at a constant average rate.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Probability Mass Function (PMF)</h4>
+                            <div class="katex-block">$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$$</div>
+                            <p class="formula-explain">Where <span class="katex-inline">\(\lambda > 0\)</span> is the average rate (expected number of events per interval).</p>
+                        </div>
+
+                        <div class="definition-card bg-purple border-purple">
+                            <div class="definition-icon">⏱️</div>
+                            <div class="definition-content">
+                                <h4>Parameters & Properties</h4>
+                                <ul>
+                                    <li><strong>Parameter:</strong> <span class="katex-inline">\(\lambda > 0\)</span> (rate parameter)</li>
+                                    <li><strong>Mean:</strong> <span class="katex-inline">\(E[X] = \lambda\)</span></li>
+                                    <li><strong>Variance:</strong> <span class="katex-inline">\(\text{Var}(X) = \lambda\)</span></li>
+                                    <li><strong>Support:</strong> <span class="katex-inline">\(k \in \{0, 1, 2, \ldots\}\)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Use Case:</strong> Number of phone calls received per hour at a call center, number of typos per page in a book, number of cars passing through an intersection per minute.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Student's t-Distribution</h3>
+                        <p>The <strong>t-distribution</strong> arises when estimating the mean of a normally distributed population with unknown variance from a small sample. It has heavier tails than the normal distribution.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Probability Density Function (PDF)</h4>
+                            <div class="katex-block">$$f(t) = \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)} \left(1 + \frac{t^2}{\nu}\right)^{-\frac{\nu+1}{2}}$$</div>
+                            <p class="formula-explain">Where <span class="katex-inline">\(\nu\)</span> is degrees of freedom and <span class="katex-inline">\(\Gamma\)</span> is the gamma function.</p>
+                        </div>
+
+                        <div class="definition-card bg-orange border-orange">
+                            <div class="definition-icon">📐</div>
+                            <div class="definition-content">
+                                <h4>Parameters & Properties</h4>
+                                <ul>
+                                    <li><strong>Parameter:</strong> <span class="katex-inline">\(\nu > 0\)</span> (degrees of freedom)</li>
+                                    <li><strong>Mean:</strong> <span class="katex-inline">\(E[X] = 0\)</span> (for <span class="katex-inline">\(\nu > 1\)</span>)</li>
+                                    <li><strong>Variance:</strong> <span class="katex-inline">\(\text{Var}(X) = \frac{\nu}{\nu-2}\)</span> (for <span class="katex-inline">\(\nu > 2\)</span>)</li>
+                                    <li><strong>Support:</strong> <span class="katex-inline">\(t \in (-\infty, \infty)\)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Use Case:</strong> Hypothesis testing with small samples (t-tests), constructing confidence intervals when population variance is unknown, comparing means from two groups.</p>
+                    </article>
+
+                    <article class="theory-block">
+                        <h3>Chi-Square Distribution</h3>
+                        <p>The <strong>chi-square distribution</strong> describes the sum of squared standard normal random variables. It is fundamental in hypothesis testing and goodness-of-fit analysis.</p>
+                        
+                        <div class="formula-card">
+                            <h4>Probability Density Function (PDF)</h4>
+                            <div class="katex-block">$$f(x) = \frac{1}{2^{\nu/2}\Gamma(\nu/2)} x^{\nu/2 - 1} e^{-x/2}$$</div>
+                            <p class="formula-explain">For <span class="katex-inline">\(x > 0\)</span>, where <span class="katex-inline">\(\nu\)</span> is degrees of freedom.</p>
+                        </div>
+
+                        <div class="definition-card bg-red border-red">
+                            <div class="definition-icon">🔬</div>
+                            <div class="definition-content">
+                                <h4>Parameters & Properties</h4>
+                                <ul>
+                                    <li><strong>Parameter:</strong> <span class="katex-inline">\(\nu \in \mathbb{N}\)</span> (degrees of freedom)</li>
+                                    <li><strong>Mean:</strong> <span class="katex-inline">\(E[X] = \nu\)</span></li>
+                                    <li><strong>Variance:</strong> <span class="katex-inline">\(\text{Var}(X) = 2\nu\)</span></li>
+                                    <li><strong>Support:</strong> <span class="katex-inline">\(x \in [0, \infty)\)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p><strong>Real-World Use Case:</strong> Chi-square goodness-of-fit tests, tests of independence in contingency tables, testing variance equality, likelihood ratio tests.</p>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="theory-sidebar">
+                    <div class="info-card">
+                        <h4>📋 Distribution Types</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-blue">●</span> <strong>Continuous:</strong> Normal, t, Chi-square</li>
+                            <li><span class="factor-symbol text-green">■</span> <strong>Discrete:</strong> Binomial, Poisson</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>🔑 Key Relationships</h4>
+                        <ul class="factor-list">
+                            <li><span class="factor-symbol text-purple">→</span> Binomial → Normal (large n)</li>
+                            <li><span class="factor-symbol text-purple">→</span> Poisson → Normal (large λ)</li>
+                            <li><span class="factor-symbol text-purple">→</span> t → Normal (ν → ∞)</li>
+                            <li><span class="factor-symbol text-purple">→</span> χ²(1) = Z²</li>
+                        </ul>
+                    </div>
+
+                    <div class="misconception-warning">
+                        <div class="warning-header">
+                            <span class="warning-icon">💡</span>
+                            <h3>When to Use Which?</h3>
+                        </div>
+                        <div class="warning-content">
+                            <p><strong>Normal:</strong> Continuous measurements, averages</p>
+                            <p><strong>Binomial:</strong> Count of successes in fixed trials</p>
+                            <p><strong>Poisson:</strong> Count of rare events over time/space</p>
+                            <p><strong>t:</strong> Small sample inference, unknown σ</p>
+                            <p><strong>χ²:</strong> Variance tests, categorical data</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Interactive Simulator -->
+            <div class="simulator-layout">
+                <!-- Controls Panel -->
+                <aside class="controls-panel">
+                    <div class="control-group">
+                        <h3>🎛️ Distribution Parameters</h3>
+
+                        <div class="select-control">
+                            <label for="distributionSelect">Select Distribution</label>
+                            <select id="distributionSelect" aria-describedby="distSelectDesc">
+                                <option value="normal">Normal Distribution</option>
+                                <option value="binomial">Binomial Distribution</option>
+                                <option value="poisson">Poisson Distribution</option>
+                                <option value="t">Student's t-Distribution</option>
+                                <option value="chisquare">Chi-Square Distribution</option>
+                            </select>
+                            <p class="control-note" id="distSelectDesc">Choose a distribution to visualize</p>
+                        </div>
+
+                        <!-- Normal Parameters -->
+                        <div class="slider-control dist-params" data-dist="normal">
+                            <label for="normalMu">
+                                Mean (μ)
+                                <output class="slider-value" id="normalMuValue" for="normalMu">0</output>
+                            </label>
+                            <input type="range" id="normalMu" min="-5" max="5" value="0" step="0.5">
+                            <div class="slider-ticks"><span>-5</span><span>5</span></div>
+                        </div>
+
+                        <div class="slider-control dist-params" data-dist="normal">
+                            <label for="normalSigma">
+                                Std Dev (σ)
+                                <output class="slider-value" id="normalSigmaValue" for="normalSigma">1</output>
+                            </label>
+                            <input type="range" id="normalSigma" min="0.1" max="3" value="1" step="0.1">
+                            <div class="slider-ticks"><span>0.1</span><span>3</span></div>
+                        </div>
+
+                        <!-- Binomial Parameters -->
+                        <div class="slider-control dist-params" data-dist="binomial" style="display:none;">
+                            <label for="binomialN">
+                                Trials (n)
+                                <output class="slider-value" id="binomialNValue" for="binomialN">10</output>
+                            </label>
+                            <input type="range" id="binomialN" min="1" max="50" value="10" step="1">
+                            <div class="slider-ticks"><span>1</span><span>50</span></div>
+                        </div>
+
+                        <div class="slider-control dist-params" data-dist="binomial" style="display:none;">
+                            <label for="binomialP">
+                                Success Prob (p)
+                                <output class="slider-value" id="binomialPValue" for="binomialP">0.5</output>
+                            </label>
+                            <input type="range" id="binomialP" min="0.01" max="0.99" value="0.5" step="0.01">
+                            <div class="slider-ticks"><span>0.01</span><span>0.99</span></div>
+                        </div>
+
+                        <!-- Poisson Parameters -->
+                        <div class="slider-control dist-params" data-dist="poisson" style="display:none;">
+                            <label for="poissonLambda">
+                                Rate (λ)
+                                <output class="slider-value" id="poissonLambdaValue" for="poissonLambda">3</output>
+                            </label>
+                            <input type="range" id="poissonLambda" min="0.5" max="20" value="3" step="0.5">
+                            <div class="slider-ticks"><span>0.5</span><span>20</span></div>
+                        </div>
+
+                        <!-- t-Distribution Parameters -->
+                        <div class="slider-control dist-params" data-dist="t" style="display:none;">
+                            <label for="tDf">
+                                Degrees of Freedom (ν)
+                                <output class="slider-value" id="tDfValue" for="tDf">5</output>
+                            </label>
+                            <input type="range" id="tDf" min="1" max="30" value="5" step="1">
+                            <div class="slider-ticks"><span>1</span><span>30</span></div>
+                        </div>
+
+                        <!-- Chi-Square Parameters -->
+                        <div class="slider-control dist-params" data-dist="chisquare" style="display:none;">
+                            <label for="chisquareDf">
+                                Degrees of Freedom (ν)
+                                <output class="slider-value" id="chisquareDfValue" for="chisquareDf">3</output>
+                            </label>
+                            <input type="range" id="chisquareDf" min="1" max="30" value="3" step="1">
+                            <div class="slider-ticks"><span>1</span><span>30</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Distribution Statistics</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Mean</div>
+                                <div class="stat-value" id="distMean">—</div>
+                                <div class="stat-subtitle">Expected value</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Variance</div>
+                                <div class="stat-value" id="distVariance">—</div>
+                                <div class="stat-subtitle">σ²</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Std Deviation</div>
+                                <div class="stat-value" id="distStdDev">—</div>
+                                <div class="stat-subtitle">σ</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Type</div>
+                                <div class="stat-value" id="distType" style="font-size: var(--font-size-lg);">—</div>
+                                <div class="stat-subtitle">Distribution</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Visualization Panel -->
+                <div class="visualization-panel">
+                    <div class="viz-header">
+                        <h3 id="vizTitle">Normal Distribution</h3>
+                        <div class="viz-legend">
+                            <span class="legend-item"><span class="legend-dot legend-dot-success"></span>Mean (μ)</span>
+                            <span class="legend-item"><span class="legend-line legend-line-solid"></span>PDF/PMF Curve</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="distributionChart" aria-label="Probability distribution visualization" role="img"></canvas>
+                    </div>
+                    <div class="viz-footer">
+                        <p id="vizDescription">The bell-shaped curve showing the probability density of the normal distribution with the specified parameters.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
